@@ -16,10 +16,15 @@ class GitHubApiClient {
     }
 
     this.getPullRequests = this.getPullRequests.bind(this)
+    this.getAllPullRequests = this.getAllPullRequests.bind(this)
   }
 
   getPullRequests(author) {
     return this.github.search.issues({q: `type:pr+state:open+author:${author}`});
+  }
+
+  async getAllPullRequests(authors) {
+    return await Promise.all(authors.map(this.getPullRequests));
   }
 }
 
