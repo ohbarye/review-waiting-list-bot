@@ -1,27 +1,8 @@
 'use strict';
 
-const Botkit = require('botkit');
+const SlackBot = require('./src/SlackBot');
 
-const slackBotToken = process.env.SLACK_BOT_TOKEN;
-
-if (!slackBotToken) {
-  console.log('Error: Specify token in environment');
-  process.exit(1);
-}
-
-const controller = Botkit.slackbot({
-  debug: !!process.env.DEBUG
-});
-
-const bot = controller.spawn({
-  token: slackBotToken
-})
-
-bot.startRTM((err, bot, payload) => {
-  if (err) {
-    throw new Error('Could not connect to Slack');
-  }
-});
+const controller = new SlackBot().getController()
 
 controller.hears("^ls author:([^\s]+) owner:([^\s]+)",["direct_message","direct_mention","mention"], (bot, message) => {
   const authors = message.match[1].split(',');
