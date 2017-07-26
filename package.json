@@ -10,6 +10,7 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "github": "^9.2.0"
+    "github": "^9.2.0",
+    "lodash": "^4.17.4"
   }
 }
