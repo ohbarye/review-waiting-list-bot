@@ -1,0 +1,15 @@
+{
+  "name": "review-waiting-list-bot",
+  "version": "0.1.0",
+  "description": "List up pull requests waiting for review",
+  "main": "index.js",
+  "repository": "https://github.com/ohbarye/review-waiting-list-bot",
+  "author": "ohbarye <over.rye@gmail.com> (http://ohbarye.me/)",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 8.0"
+  },
+  "dependencies": {
+    "github": "^9.2.0"
+  }
+}
