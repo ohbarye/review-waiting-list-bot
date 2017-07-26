@@ -18,8 +18,8 @@ class GitHubApiClient {
     this.getPullRequests = this.getPullRequests.bind(this)
   }
 
-  getPullRequests(username) {
-    return this.github.search.issues({q: `type:pr+state:open+author:${username}`});
+  getPullRequests(author) {
+    return this.github.search.issues({q: `type:pr+state:open+author:${author}`});
   }
 }
 
