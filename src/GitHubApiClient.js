@@ -9,7 +9,7 @@ class GitHubApiClient {
       timeout: 5000
     });
 
-    const AUTH_TOKEN = process.env.AUTH_TOKEN;
+    const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;
 
     if (AUTH_TOKEN) {
       this.github.authenticate({type: "oauth", token: AUTH_TOKEN});
