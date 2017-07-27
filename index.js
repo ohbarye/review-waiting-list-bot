@@ -7,9 +7,10 @@ const _ = require('lodash');
 
 const controller = new SlackBot().getController();
 
-controller.hears("^ls author:([^\s]+) owner:([^\s]+)",["direct_message","direct_mention","mention"], (bot, message) => {
-  const authors = message.match[1].split(',');
-  const owner = message.match[2];
+controller.hears("^ls (.+)",["direct_message","direct_mention","mention"], (bot, message) => {
+  const match = message.match[1].match(/author:([^\s]+) owner:([^\s]+)/);
+  const authors = match[1].split(',');
+  const owner = match[2];
 
   const client = new GitHubApiClient();
 
