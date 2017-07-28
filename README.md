@@ -7,7 +7,10 @@ It's a Slack bot to list up review waiting list.
 
 ## Usage
 
+In your Slack room, just call your bot.
+
 ```
+/invite @review-bot
 @review-bot ls author:ohbarye,basan owner:ohbarye
 ```
 
