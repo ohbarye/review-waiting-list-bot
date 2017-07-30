@@ -26,6 +26,10 @@ class GitHubApiClient {
   async getAllPullRequests(authors) {
     return await Promise.all(authors.map(this.getPullRequests));
   }
+
+  isTeam(author) {
+    !!author.match(/^.+\/.+$/)
+  }
 }
 
 module.exports = GitHubApiClient;
