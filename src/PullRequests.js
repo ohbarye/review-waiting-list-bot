@@ -20,7 +20,8 @@ class PullRequests {
 
   belongsToOwner(pr) {
     if (this.owner.value) {
-      return pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value;
+      const result = pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value;
+      return (this.owner.inclusion ? result : !result);
     } else {
       return true;
     }
@@ -28,9 +29,10 @@ class PullRequests {
 
   matchesRepo(pr) {
     if (this.repo.value.length > 0) {
-      return _.some(this.repo.value, (repo) => {
+      const result = _.some(this.repo.value, (repo) => {
         return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo;
       });
+      return (this.repo.inclusion ? result : !result);
     } else {
       return true;
     }

@@ -21,7 +21,7 @@ class Parser {
   }
 
   extract(argName) {
-    const regexp = new RegExp(`${argName}:([A-z0-9\-,\/]+)`);
+    const regexp = new RegExp(`-?${argName}:([A-z0-9\-,\/]+)`);
     const matched = this.args.match(regexp);
     const type = this.argTypes[argName];
 
