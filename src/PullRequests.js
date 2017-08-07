@@ -9,6 +9,7 @@ class PullRequests {
     this.repo = repo;
 
     this.belongsToOwner = this.belongsToOwner.bind(this)
+    this.matchesRepo = this.matchesRepo.bind(this)
   }
 
   isIgnorable(pr) {
@@ -25,6 +26,16 @@ class PullRequests {
     }
   }
 
+  matchesRepo(pr) {
+    if (this.repo.length > 0) {
+      return _.some(this.repo, (repo) => {
+        return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo;
+      });
+    } else {
+      return true;
+    }
+  }
+
   formatPullRequest(pr, index) {
     return `${index+1}. \`${pr.title}\` ${pr.html_url} by ${pr.user.login}`;
   }
@@ -33,6 +44,7 @@ class PullRequests {
     return _(this.prs).flatMap((prs) => prs.data.items)
       .reject(this.isIgnorable)
       .filter(this.belongsToOwner)
+      .filter(this.matchesRepo)
       .map(this.formatPullRequest)
       .value();
   }
