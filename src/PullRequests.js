@@ -3,9 +3,10 @@
 const _ = require('lodash');
 
 class PullRequests {
-  constructor(prs, owner) {
+  constructor(prs, owner, repo) {
     this.prs = prs;
     this.owner = owner;
+    this.repo = repo;
 
     this.belongsToOwner = this.belongsToOwner.bind(this)
   }
