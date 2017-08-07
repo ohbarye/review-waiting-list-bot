@@ -3,11 +3,13 @@
 const _ = require('lodash');
 
 class PullRequests {
-  constructor(prs, owner) {
+  constructor(prs, owner, repo) {
     this.prs = prs;
     this.owner = owner;
+    this.repo = repo;
 
     this.belongsToOwner = this.belongsToOwner.bind(this)
+    this.matchesRepo = this.matchesRepo.bind(this)
   }
 
   isIgnorable(pr) {
@@ -17,8 +19,20 @@ class PullRequests {
   }
 
   belongsToOwner(pr) {
-    if (this.owner) {
-      return pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner;
+    if (this.owner.value) {
+      const result = pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value;
+      return (this.owner.inclusion ? result : !result);
+    } else {
+      return true;
+    }
+  }
+
+  matchesRepo(pr) {
+    if (this.repo.value.length > 0) {
+      const result = _.some(this.repo.value, (repo) => {
+        return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo;
+      });
+      return (this.repo.inclusion ? result : !result);
     } else {
       return true;
     }
@@ -32,6 +46,7 @@ class PullRequests {
     return _(this.prs).flatMap((prs) => prs.data.items)
       .reject(this.isIgnorable)
       .filter(this.belongsToOwner)
+      .filter(this.matchesRepo)
       .map(this.formatPullRequest)
       .value();
   }
