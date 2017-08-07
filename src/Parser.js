@@ -25,19 +25,22 @@ class Parser {
     const matched = this.args.match(regexp);
     const type = this.argTypes[argName];
 
+    let condition ={
+      value: (type === 'multiple' ? [] : ''),
+      inclusion: true,
+    };
+
     if (matched) {
       if (type === 'multiple') {
-        return _.compact(_.trim(matched[1]).split(','));
+        condition.value = _.compact(_.trim(matched[1]).split(','));
       } else if (type === 'single') {
-        return _.trim(matched[1]);
+        condition.value = _.trim(matched[1]);
       }
-    } else {
-      if (type === 'multiple') {
-        return [];
-      } else if (type === 'single') {
-        return '';
-      }
+
+      condition.inclusion = !_.startsWith(matched[0], '-');
     }
+
+    return condition;
   }
 }
 

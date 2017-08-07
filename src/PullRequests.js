@@ -19,16 +19,16 @@ class PullRequests {
   }
 
   belongsToOwner(pr) {
-    if (this.owner) {
-      return pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner;
+    if (this.owner.value) {
+      return pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value;
     } else {
       return true;
     }
   }
 
   matchesRepo(pr) {
-    if (this.repo.length > 0) {
-      return _.some(this.repo, (repo) => {
+    if (this.repo.value.length > 0) {
+      return _.some(this.repo.value, (repo) => {
         return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo;
       });
     } else {
