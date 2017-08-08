@@ -21,6 +21,7 @@ controller.hears("ls (.+)",["direct_message","direct_mention","mention"], (bot, 
 
       if (messages.length > 0) {
         _.each(messages, (pr) => convo.say(pr));
+        convo.say("That's all. Please review!");
       } else {
         convo.say('No pull requests for now.');
       }
