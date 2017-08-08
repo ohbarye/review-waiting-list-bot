@@ -16,10 +16,10 @@ class GitHubApiClient {
       this.github.authenticate({type: "oauth", token: AUTH_TOKEN});
     }
 
-    _.bindAll(this, ['getPullRequests', 'getTeamMembers', 'isTeam', 'getAllPullRequests']);
+    _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor']);
   }
 
-  getPullRequests(author) {
+  getPullRequestsForAuthor(author) {
     return this.github.search.issues({q: `type:pr+state:open+author:${author}`});
   }
 
@@ -32,15 +32,17 @@ class GitHubApiClient {
     return teamMembers.data.map((member) => member.login);
   }
 
+  async getPullRequestsForTeamOrAuthor(author) {
+    if (this.isTeam(author)) {
+      const teamMembers = await this.getTeamMembers(author);
+      return Promise.all(_.flatMap(teamMembers, this.getPullRequestsForAuthor));
+    } else {
+      return this.getPullRequestsForAuthor(author);
+    }
+  }
+
   async getAllPullRequests(authors) {
-    const prs = await Promise.all(authors.value.map(async (author) => {
-      if (this.isTeam(author)) {
-        const teamMembers = await this.getTeamMembers(author);
-        return Promise.all(_.flatMap(teamMembers, this.getPullRequests));
-      } else {
-        return this.getPullRequests(author);
-      }
-    }));
+    const prs = await Promise.all(authors.value.map(this.getPullRequestsForTeamOrAuthor));
     return _.flattenDeep(prs);
   }
 
