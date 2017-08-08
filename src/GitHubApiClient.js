@@ -16,10 +16,7 @@ class GitHubApiClient {
       this.github.authenticate({type: "oauth", token: AUTH_TOKEN});
     }
 
-    this.getPullRequests = this.getPullRequests.bind(this);
-    this.getTeamMembers = this.getTeamMembers.bind(this);
-    this.isTeam = this.isTeam.bind(this);
-    this.getAllPullRequests = this.getAllPullRequests.bind(this);
+    _.bindAll(this, ['getPullRequests', 'getTeamMembers', 'isTeam', 'getAllPullRequests']);
   }
 
   getPullRequests(author) {

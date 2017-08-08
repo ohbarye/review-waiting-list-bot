@@ -8,8 +8,7 @@ class PullRequests {
     this.owner = owner;
     this.repo = repo;
 
-    this.belongsToOwner = this.belongsToOwner.bind(this)
-    this.matchesRepo = this.matchesRepo.bind(this)
+    _.bindAll(this, ['belongsToOwner', 'matchesRepo']);
   }
 
   isIgnorable(pr) {
