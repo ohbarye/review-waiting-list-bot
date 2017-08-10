@@ -1,8 +1,16 @@
 {
   "extends": ["eslint:recommended"],
   "plugins": [],
-  "parserOptions": {},
-  "env": {"browser": true},
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
   "globals": {},
-  "rules": {}
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+  }
 }
