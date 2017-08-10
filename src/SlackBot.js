@@ -17,7 +17,7 @@ class SlackBot {
 
     this.controller.spawn({
       token: slackBotToken
-    }).startRTM((err, bot, payload) => {
+    }).startRTM((err, _bot, _payload) => {
       if (err) {
         throw new Error('Could not connect to Slack');
       }
