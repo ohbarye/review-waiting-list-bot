@@ -10,26 +10,28 @@ class App {
   static start() {
     const controller = new SlackBot().getController()
 
-    controller.hears("ls (.+)", ["direct_message", "direct_mention", "mention"], (bot, message) => {
-      const {authors, owner, repo} = new Parser(message.match[1]).parse()
+    controller.hears("ls (.+)", ["direct_message", "direct_mention", "mention"], this.ls)
+  }
 
-      const client = new GitHubApiClient()
+  static ls(bot, message) {
+    const {authors, owner, repo} = new Parser(message.match[1]).parse()
 
-      client.getAllPullRequests(authors).then((prs) => {
-        bot.startConversation(message, (err, convo) => {
-          convo.say(':memo: Review waiting list!')
+    const client = new GitHubApiClient()
 
-          const messages = new PullRequests(prs, owner, repo).convertToSlackMessages()
+    client.getAllPullRequests(authors).then((prs) => {
+      bot.startConversation(message, (err, convo) => {
+        convo.say(':memo: Review waiting list!')
 
-          if (messages.length > 0) {
-            _.each(messages, (pr) => convo.say(pr))
-            convo.say("That's all. Please review!")
-          } else {
-            convo.say('No pull requests for now.')
-          }
+        const messages = new PullRequests(prs, owner, repo).convertToSlackMessages()
 
-          convo.next()
-        })
+        if (messages.length > 0) {
+          _.each(messages, (pr) => convo.say(pr))
+          convo.say("That's all. Please review!")
+        } else {
+          convo.say('No pull requests for now.')
+        }
+
+        convo.next()
       })
     })
   }
