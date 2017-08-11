@@ -4,6 +4,8 @@
 
 It's a Slack bot to list up review waiting list.
 
+<img width="1035" alt="2017-08-11 11 15 31" src="https://user-images.githubusercontent.com/1811616/29199753-659fd0e2-7e8a-11e7-8435-99daa8c0b233.png">
+
 
 ## Usage
 
