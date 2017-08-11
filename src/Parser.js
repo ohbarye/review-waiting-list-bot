@@ -1,15 +1,15 @@
-'use strict';
+'use strict'
 
 const _ = require('lodash')
 
 class Parser {
   constructor(args) {
-    this.args = args;
+    this.args = args
     this.argTypes = {
       author: 'multiple',
       owner: 'single',
       repo: 'multiple',
-    };
+    }
   }
 
   parse() {
@@ -21,27 +21,27 @@ class Parser {
   }
 
   extract(argName) {
-    const regexp = new RegExp(`-?${argName}:([A-z0-9-,/]+)`);
-    const matched = this.args.match(regexp);
-    const type = this.argTypes[argName];
+    const regexp = new RegExp(`-?${argName}:([A-z0-9-,/]+)`)
+    const matched = this.args.match(regexp)
+    const type = this.argTypes[argName]
 
     let condition ={
       value: (type === 'multiple' ? [] : ''),
       inclusion: true,
-    };
+    }
 
     if (matched) {
       if (type === 'multiple') {
-        condition.value = _.compact(_.trim(matched[1]).split(','));
+        condition.value = _.compact(_.trim(matched[1]).split(','))
       } else if (type === 'single') {
-        condition.value = _.trim(matched[1]);
+        condition.value = _.trim(matched[1])
       }
 
-      condition.inclusion = !_.startsWith(matched[0], '-');
+      condition.inclusion = !_.startsWith(matched[0], '-')
     }
 
-    return condition;
+    return condition
   }
 }
 
-module.exports = Parser;
+module.exports = Parser
