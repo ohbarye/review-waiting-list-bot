@@ -7,7 +7,7 @@ class GitHubApiClient {
   constructor() {
     this.github = new GitHubApi({
       debug: !!process.env.DEBUG,
-      timeout: 5000
+      timeout: 5000,
     });
 
     const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;

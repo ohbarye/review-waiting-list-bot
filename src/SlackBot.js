@@ -11,17 +11,12 @@ class SlackBot {
       process.exit(1);
     }
 
-    this.controller = Botkit.slackbot({
-      debug: !!process.env.DEBUG
-    });
+    this.controller = Botkit.slackbot({debug: !!process.env.DEBUG});
 
-    this.controller.spawn({
-      token: slackBotToken
-    }).startRTM((err, _bot, _payload) => {
-      if (err) {
-        throw new Error('Could not connect to Slack');
-      }
-    });
+    this.controller.spawn({token: slackBotToken})
+      .startRTM((err, _bot, _payload) => {
+        if (err) throw new Error('Could not connect to Slack');
+      });
   }
 
   getController() {
