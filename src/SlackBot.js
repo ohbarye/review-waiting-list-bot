@@ -1,27 +1,22 @@
-'use strict';
+'use strict'
 
-const Botkit = require('botkit');
+const Botkit = require('botkit')
 
 class SlackBot {
   constructor() {
-    const slackBotToken = process.env.SLACK_BOT_TOKEN;
+    const slackBotToken = process.env.SLACK_BOT_TOKEN
 
     if (!slackBotToken) {
-      console.log('Error: Specify token in environment');
-      process.exit(1);
+      console.log('Error: Specify token in environment')
+      process.exit(1)
     }
 
-    this.controller = Botkit.slackbot({
-      debug: !!process.env.DEBUG
-    });
+    this.controller = Botkit.slackbot({debug: !!process.env.DEBUG})
 
-    this.controller.spawn({
-      token: slackBotToken
-    }).startRTM((err, _bot, _payload) => {
-      if (err) {
-        throw new Error('Could not connect to Slack');
-      }
-    });
+    this.controller.spawn({token: slackBotToken})
+      .startRTM((err, _bot, _payload) => {
+        if (err) throw new Error('Could not connect to Slack')
+      })
   }
 
   getController() {
@@ -29,4 +24,4 @@ class SlackBot {
   }
 }
 
-module.exports = SlackBot;
+module.exports = SlackBot

@@ -1,44 +1,44 @@
-'use strict';
+'use strict'
 
-const _ = require('lodash');
+const _ = require('lodash')
 
 class PullRequests {
   constructor(prs, owner, repo) {
-    this.prs = prs;
-    this.owner = owner;
-    this.repo = repo;
+    this.prs = prs
+    this.owner = owner
+    this.repo = repo
 
-    _.bindAll(this, ['belongsToOwner', 'matchesRepo']);
+    _.bindAll(this, ['belongsToOwner', 'matchesRepo'])
   }
 
   isIgnorable(pr) {
-    const ignoreWords = ['wip', 'dont merge', 'dontmerge', 'donotmerge'];
-    const regex = new RegExp(`(${ignoreWords.join('|')})`, 'i');
+    const ignoreWords = ['wip', 'dont merge', 'dontmerge', 'donotmerge']
+    const regex = new RegExp(`(${ignoreWords.join('|')})`, 'i')
     return !!pr.title.match(regex)
   }
 
   belongsToOwner(pr) {
     if (this.owner.value) {
-      const result = pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value;
-      return (this.owner.inclusion ? result : !result);
+      const result = pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value
+      return (this.owner.inclusion ? result : !result)
     } else {
-      return true;
+      return true
     }
   }
 
   matchesRepo(pr) {
     if (this.repo.value.length > 0) {
       const result = _.some(this.repo.value, (repo) => {
-        return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo;
-      });
-      return (this.repo.inclusion ? result : !result);
+        return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo
+      })
+      return (this.repo.inclusion ? result : !result)
     } else {
-      return true;
+      return true
     }
   }
 
   formatPullRequest(pr, index) {
-    return `${index+1}. \`${pr.title}\` ${pr.html_url} by ${pr.user.login}`;
+    return `${index+1}. \`${pr.title}\` ${pr.html_url} by ${pr.user.login}`
   }
 
   convertToSlackMessages() {
@@ -47,8 +47,8 @@ class PullRequests {
       .filter(this.belongsToOwner)
       .filter(this.matchesRepo)
       .map(this.formatPullRequest)
-      .value();
+      .value()
   }
 }
 
-module.exports = PullRequests;
+module.exports = PullRequests
