@@ -26,10 +26,25 @@ Besides, the bot accepts random order.
 
 ## Develop
 
+### Setup
+
 ```sh
 $ git clone git@github.com:ohbarye/review-waiting-list-bot.git
-$ npm install -g yarn && yarn
-$ SLACK_BOT_TOKEN=your-slack-bot-token GITHUB_AUTH_TOKEN=your-github-auth-token node index.js
+$ npm install -g yarn # or brew install yarn
+$ yarn
+```
+
+### Start
+
+```sh
+$ SLACK_BOT_TOKEN=your-slack-bot-token GITHUB_AUTH_TOKEN=your-github-auth-token yarn start
+```
+
+### Test / Lint
+
+```sh
+$ yarn test
+$ yarn lint
 ```
 
 ## Deployment
