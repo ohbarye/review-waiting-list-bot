@@ -7,7 +7,7 @@ test('.isIgnorable(pr) returns true with matched strings', () => {
     { title: "Don't merge - this is a PR title" },
     { title: "Do not merge - this is a PR title" },
     { title: "[DO NOT MERGE] - this is a PR title" },
-    { title: "WIP - this is a PR title" }
+    { title: "WIP - this is a PR title" },
   ]
 
   for (let pr of pullRequests) {
