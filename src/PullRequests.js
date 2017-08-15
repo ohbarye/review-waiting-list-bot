@@ -12,9 +12,10 @@ class PullRequests {
   }
 
   isIgnorable(pr) {
-    const ignoreWords = ['wip', 'dont merge', 'dontmerge', 'donotmerge']
+    const ignoreWords = ['wip', 'dontmerge', 'donotmerge']
     const regex = new RegExp(`(${ignoreWords.join('|')})`, 'i')
-    return !!pr.title.match(regex)
+    const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
+    return !!sanitizedTitle.match(regex)
   }
 
   belongsToOwner(pr) {
