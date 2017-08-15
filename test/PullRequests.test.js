@@ -10,7 +10,7 @@ test('.isIgnorable(pr) returns true with matched strings', () => {
     { title: "WIP - this is a PR title" },
   ]
 
-  for (let pr of pullRequests) {
+  for (const pr of pullRequests) {
     expect(pullRequest.isIgnorable(pr)).toBeTruthy()
   }
 })
