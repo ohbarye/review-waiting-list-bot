@@ -1,5 +1,7 @@
 # Let's encourage your team's review
 
+[![Build Status](https://travis-ci.org/ohbarye/review-waiting-list-bot.svg?branch=master)](https://travis-ci.org/ohbarye/review-waiting-list-bot)
+
 ## What's this?
 
 It's a Slack bot to list up review waiting list.
