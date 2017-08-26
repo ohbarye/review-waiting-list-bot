@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepush": "npm run lint"
   },
   "dependencies": {
     "botkit": "^0.5.5",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "eslint": "^4.4.1",
     "eslint-plugin-jest": "^20.0.3",
+    "husky": "^0.14.3",
     "jest": "^20.0.4"
   }
 }
