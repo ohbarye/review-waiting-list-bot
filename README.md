@@ -26,6 +26,16 @@ repo | Optional | You can specify multiple repositories. If you specify this arg
 
 Besides, the bot accepts random order.
 
+### Tips
+
+You can use this bot even better in combination with the [Slack reminder](https://get.slack.help/hc/en-us/articles/208423427-Set-a-reminder).
+
+For instance, the following reminder setting invokes the bot every weekday 11 am.
+
+```
+/remind #general “@review-bot ls author:ohbarye,basan,org/team owner:ohbarye repo:ohbarye/review-waiting-list-bot,rails/rails” at 11am every weekday
+```
+
 ## Develop
 
 ### Setup
