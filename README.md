@@ -23,6 +23,7 @@ argument | presence | description
 author | Required | You can specify multiple authors with comma separated values. Also `org/team` is available.
 owner | Optional | It allows only one owner. If you specify this argument with `-` (e.g. `-owner:ohbarye`), it excludes pull requests of the owner.
 repo | Optional | You can specify multiple repositories. If you specify this argument with `-` (e.g. `-repo:ohbarye/review-waiting-list-bot`), it excludes pull requests in the repositories.
+label | Optional | You can specify multiple labels. If you specify this argument with `-` (e.g. `-label:enhancement`), it excludes pull requests in the repository.
 
 Besides, the bot accepts random order.
 
@@ -77,5 +78,4 @@ If you do not have it yet, visit https://my.slack.com/services/new/bot and get t
 ### GITHUB_AUTH_TOKEN (required)
 
 GitHub bot API token.
- 
 If you're not familiar with it, see https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
