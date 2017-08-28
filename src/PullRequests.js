@@ -3,12 +3,13 @@
 const _ = require('lodash')
 
 class PullRequests {
-  constructor(prs, owner, repo) {
+  constructor(prs, owner, repo, label) {
     this.prs = prs
     this.owner = owner
     this.repo = repo
+    this.label = label
 
-    _.bindAll(this, ['belongsToOwner', 'matchesRepo'])
+    _.bindAll(this, ['belongsToOwner', 'matchesRepo', 'matchesLabel'])
   }
 
   isIgnorable(pr) {
@@ -38,6 +39,17 @@ class PullRequests {
     }
   }
 
+  matchesLabel(pr) {
+    if (this.label.value.length > 0) {
+      const result = _.some(this.label.value, (_label) => {
+        return _.flatMap(pr.labels, (label) => label.name).includes(_label)
+      })
+      return (this.label.inclusion ? result : !result)
+    } else {
+      return true
+    }
+  }
+
   formatPullRequest(pr, index) {
     return `${index+1}. \`${pr.title}\` ${pr.html_url} by ${pr.user.login}`
   }
@@ -47,6 +59,7 @@ class PullRequests {
       .reject(this.isIgnorable)
       .filter(this.belongsToOwner)
       .filter(this.matchesRepo)
+      .filter(this.matchesLabel)
       .map(this.formatPullRequest)
       .value()
   }
