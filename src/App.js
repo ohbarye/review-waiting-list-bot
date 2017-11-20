@@ -14,11 +14,18 @@ class App {
   }
 
   static ls(bot, message) {
-    const {authors, owner, repo, label} = new Parser(message.match[1]).parse()
+    const {authors, owner, repo, label, assignee} = new Parser(message.match[1]).parse()
+
+    if (_.isEmpty(authors.value) && _.isEmpty(assignee.value)) {
+      bot.startConversation(message, (err, convo) => {
+        convo.say("Please set either author or assignee.")
+      })
+      return
+    }
 
     const client = new GitHubApiClient()
 
-    client.getAllPullRequests(authors).then((prs) => {
+    client.getAllPullRequests({ authors, assignee }).then((prs) => {
       bot.startConversation(message, (err, convo) => {
         convo.say(':memo: Review waiting list!')
 

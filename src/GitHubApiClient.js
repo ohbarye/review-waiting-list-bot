@@ -16,11 +16,15 @@ class GitHubApiClient {
       this.github.authenticate({type: "oauth", token: AUTH_TOKEN})
     }
 
-    _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
+    _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor', 'getPullRequestsForAssignee'])
   }
 
   getPullRequestsForAuthor(author) {
     return this.github.search.issues({q: `type:pr+state:open+author:${author}`})
+  }
+
+  getPullRequestsForAssignee(assignee) {
+    return this.github.search.issues({q: `type:pr+state:open+assignee:${assignee}`})
   }
 
   async getTeamMembers(teamNameWithOrg) {
@@ -41,8 +45,17 @@ class GitHubApiClient {
     }
   }
 
-  async getAllPullRequests(authors) {
-    const prs = await Promise.all(authors.value.map(this.getPullRequestsForTeamOrAuthor))
+  async getAllPullRequests({authors={}, assignee={}}) {
+    let prs
+
+    if (!_.isEmpty(authors.value) && _.isEmpty(assignee.value)) {
+      prs = await Promise.all(authors.value.map(this.getPullRequestsForTeamOrAuthor))
+    } else if (_.isEmpty(authors.value) && !_.isEmpty(assignee.value)) {
+      prs = await Promise.all(assignee.value.map(this.getPullRequestsForAssignee))
+    } else {
+      throw new Error('Please set either author or assignee.')
+    }
+
     return _.flattenDeep(prs)
   }
 
