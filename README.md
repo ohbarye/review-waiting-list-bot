@@ -20,7 +20,8 @@ In your Slack room, just call your bot.
 
 argument | presence | description
 --- | --- | ---
-author | Required | You can specify multiple authors with comma separated values. Also `org/team` is available.
+author | Conditionally Required | If you don't specify _assignee_, you have to set this argument. You can specify multiple authors with comma separated values. Also `org/team` is available.
+assignee | Conditionally Required | If you don't specify _author_, you have to set this argument. You can specify multiple assignees with comma separated values. `org/team` is unavailable.
 owner | Optional | It allows only one owner. If you specify this argument with `-` (e.g. `-owner:ohbarye`), it excludes pull requests of the owner.
 repo | Optional | You can specify multiple repositories. If you specify this argument with `-` (e.g. `-repo:ohbarye/review-waiting-list-bot`), it excludes pull requests in the repositories.
 label | Optional | You can specify multiple labels. If you specify this argument with `-` (e.g. `-label:enhancement`), it excludes pull requests in the repository.

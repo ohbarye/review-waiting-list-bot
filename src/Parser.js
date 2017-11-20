@@ -7,6 +7,7 @@ class Parser {
     this.args = args
     this.argTypes = {
       author: 'multiple',
+      assignee: 'multiple',
       owner: 'single',
       repo: 'multiple',
       label: 'multiple',
@@ -16,6 +17,7 @@ class Parser {
   parse() {
     return {
       authors: this.extract('author'),
+      assignee: this.extract('assignee'),
       owner: this.extract('owner'),
       repo: this.extract('repo'),
       label: this.extract('label'),
