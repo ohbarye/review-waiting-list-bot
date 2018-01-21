@@ -16,8 +16,8 @@
     "prepush": "npm run lint"
   },
   "dependencies": {
+    "@octokit/rest": "^14.0.4",
     "botkit": "^0.5.5",
-    "github": "^9.2.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

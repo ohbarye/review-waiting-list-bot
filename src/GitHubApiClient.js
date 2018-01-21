@@ -1,34 +1,33 @@
 'use strict'
 
-const GitHubApi = require("github")
+const octokit = require("@octokit/rest")({
+  debug: !!process.env.DEBUG,
+  timeout: 5000,
+})
 const _ = require("lodash")
 
 class GitHubApiClient {
   constructor() {
-    this.github = new GitHubApi({
-      debug: !!process.env.DEBUG,
-      timeout: 5000,
-    })
-
+    this.octokit = octokit
     const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN
 
     if (AUTH_TOKEN) {
-      this.github.authenticate({type: "oauth", token: AUTH_TOKEN})
+      this.octokit.authenticate({type: "oauth", token: AUTH_TOKEN})
     }
 
     _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
   }
 
   getPullRequestsForAuthor(author) {
-    return this.github.search.issues({q: `type:pr+state:open+author:${author}`})
+    return this.octokit.search.issues({q: `type:pr+state:open+author:${author}`})
   }
 
   async getTeamMembers(teamNameWithOrg) {
     const [orgName, teamSlug] = teamNameWithOrg.split('/')
-    const teams = await this.github.orgs.getTeams({org: orgName, per_page: 100})
+    const teams = await this.octokit.orgs.getTeams({org: orgName, per_page: 100})
     const team = _.find(teams.data, { slug: teamSlug })
 
-    const teamMembers = await this.github.orgs.getTeamMembers({id: team.id})
+    const teamMembers = await this.octokit.orgs.getTeamMembers({id: team.id})
     return teamMembers.data.map((member) => member.login)
   }
 
