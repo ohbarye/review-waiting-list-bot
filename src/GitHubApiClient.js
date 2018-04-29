@@ -22,11 +22,6 @@ class GitHubApiClient {
     const query = `
       query {
         search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
-          issueCount,
-          pageInfo {
-            endCursor,
-            hasNextPage,
-          },
           nodes {
             ... on PullRequest {
               title,
