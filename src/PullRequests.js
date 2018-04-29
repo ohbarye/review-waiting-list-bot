@@ -54,7 +54,13 @@ class PullRequests {
   matchesReviewer(pr) {
     if (this.reviewer.value.length > 0) {
       const result = _.some(this.reviewer.value, (_reviewer) => {
-        return _.flatMap(pr.reviewRequests.nodes, (request) => request.requestedReviewer.login).includes(_reviewer)
+        // Reviewer could be a user or a team
+        const matched = _reviewer.match(/^.+\/(.+)$/)
+        const usernameOrTeamName = matched ? matched[1] : _reviewer
+
+        return _.flatMap(pr.reviewRequests.nodes, (request) => {
+          return request.requestedReviewer.login || request.requestedReviewer.name
+        }).includes(usernameOrTeamName)
       })
       return (this.reviewer.inclusion ? result : !result)
     } else {

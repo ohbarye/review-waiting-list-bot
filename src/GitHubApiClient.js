@@ -42,6 +42,9 @@ class GitHubApiClient {
   //               {
   //                 "login": "ohbarye"
   //               },
+  //               {
+  //                 "name": "my-team"
+  //               },
   //             ]
   //           }
   //         }
@@ -51,7 +54,6 @@ class GitHubApiClient {
   // }
   getPullRequestsForAuthorQuery(author) {
     // TODO consider pagination
-    // TODO consider requestedReviewer is a team
     return `
       query {
         search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
@@ -72,6 +74,9 @@ class GitHubApiClient {
                   requestedReviewer {
                     ... on User {
                       login
+                    },
+                    ... on Team {
+                      name
                     },
                   }
                 }
