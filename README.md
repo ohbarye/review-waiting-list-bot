@@ -15,6 +15,13 @@ In your Slack room, just call your bot.
 
 ```
 /invite @review-bot
+@review-bot ls author:ohbarye
+```
+
+For more detailed query:
+
+```
+/invite @review-bot
 @review-bot ls author:ohbarye,basan,org/team owner:ohbarye repo:ohbarye/review-waiting-list-bot,rails/rails
 ```
 
@@ -24,6 +31,7 @@ author | Required | You can specify multiple authors with comma separated values
 owner | Optional | It allows only one owner. If you specify this argument with `-` (e.g. `-owner:ohbarye`), it excludes pull requests of the owner.
 repo | Optional | You can specify multiple repositories. If you specify this argument with `-` (e.g. `-repo:ohbarye/review-waiting-list-bot`), it excludes pull requests in the repositories.
 label | Optional | You can specify multiple labels. If you specify this argument with `-` (e.g. `-label:enhancement`), it excludes pull requests in the repository.
+reviewer | Optional | You can specify multiple reviewers. If you specify this argument with `-` (e.g. `-reviewer:ohbarye`), it excludes pull requests in the repository. Regarding review requests feature on GitHub, see https://blog.github.com/2016-12-07-introducing-review-requests/
 
 Besides, the bot accepts random order.
 
