@@ -4,7 +4,6 @@ const _ = require('lodash')
 
 class PullRequests {
   constructor(prs, owner, repo, label) {
-    console.log(prs)
     this.prs = prs
     this.owner = owner
     this.repo = repo

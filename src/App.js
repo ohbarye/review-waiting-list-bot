@@ -8,6 +8,8 @@ const _ = require('lodash')
 
 class App {
   static start() {
+    this.beforeValidate()
+
     const controller = new SlackBot().getController()
 
     controller.hears("ls (.+)", ["direct_message", "direct_mention", "mention"], this.ls)
@@ -34,6 +36,23 @@ class App {
         convo.next()
       })
     })
+  }
+
+  static beforeValidate() {
+    let errors = []
+
+    if (!process.env.GITHUB_AUTH_TOKEN) {
+      errors.push('Error: GITHUB_AUTH_TOKEN is missing.')
+    }
+    if (!process.env.SLACK_BOT_TOKEN) {
+      errors.push('Error: SLACK_BOT_TOKEN is missing.')
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((error) => console.error(error))
+      console.error('Cannot continue to start the bot due to critical lack of parameters.')
+      process.exit(1)
+    }
   }
 }
 
