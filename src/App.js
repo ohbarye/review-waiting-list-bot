@@ -16,7 +16,7 @@ class App {
   }
 
   static ls(bot, message) {
-    const {authors, owner, repo, label} = new Parser(message.match[1]).parse()
+    const {authors, ...conditions} = new Parser(message.match[1]).parse()
 
     const client = new GitHubApiClient()
 
@@ -24,7 +24,7 @@ class App {
       bot.startConversation(message, (err, convo) => {
         convo.say(':memo: Review waiting list!')
 
-        const messages = new PullRequests(prs, owner, repo, label).convertToSlackMessages()
+        const messages = new PullRequests(prs, conditions).convertToSlackMessages()
 
         if (messages.length > 0) {
           _.each(messages, (pr) => convo.say(pr))
