@@ -10,6 +10,7 @@ class Parser {
       owner: 'single',
       repo: 'multiple',
       label: 'multiple',
+      reviewer: 'multiple',
     }
   }
 
@@ -19,6 +20,7 @@ class Parser {
       owner: this.extract('owner'),
       repo: this.extract('repo'),
       label: this.extract('label'),
+      reviewer: this.extract('reviewer'),
     }
   }
 

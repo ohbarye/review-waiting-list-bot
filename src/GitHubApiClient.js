@@ -36,6 +36,13 @@ class GitHubApiClient {
   //                 "name": "enhancement"
   //               }
   //             ]
+  //           },
+  //           "reviewRequests": {
+  //             "nodes": [
+  //               {
+  //                 "login": "ohbarye"
+  //               },
+  //             ]
   //           }
   //         }
   //       ]
@@ -44,6 +51,7 @@ class GitHubApiClient {
   // }
   getPullRequestsForAuthorQuery(author) {
     // TODO consider pagination
+    // TODO consider requestedReviewer is a team
     return `
       query {
         search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
@@ -58,6 +66,15 @@ class GitHubApiClient {
                 nodes {
                   name,
                 },
+              },
+              reviewRequests(first:100) {
+                nodes {
+                  requestedReviewer {
+                    ... on User {
+                      login
+                    },
+                  }
+                }
               },
             }
           },

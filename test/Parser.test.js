@@ -1,7 +1,7 @@
 const Parser = require('../src/Parser')
 
 test('.parse() works with simple arguments', () => {
-  const parser = new Parser("author:cat owner:host repo:pethouse label:meow")
+  const parser = new Parser("author:cat owner:host repo:pethouse label:meow reviewer:dog")
   expect(parser.parse()).toEqual({
     authors: {
       inclusion: true,
@@ -18,6 +18,10 @@ test('.parse() works with simple arguments', () => {
     label: {
       inclusion: true,
       value: ['meow'],
+    },
+    reviewer: {
+      inclusion: true,
+      value: ['dog'],
     },
   })
 })

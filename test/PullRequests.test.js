@@ -21,7 +21,7 @@ describe('.belongsToOwner', () => {
   const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
 
   test('returns true with matched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       owner: {
         value: 'ohbarye',
         inclusion: true,
@@ -32,7 +32,7 @@ describe('.belongsToOwner', () => {
   })
 
   test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       owner: {
         value: 'ohbarye',
         inclusion: false,
@@ -43,7 +43,7 @@ describe('.belongsToOwner', () => {
   })
 
   test('returns false with unmatched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       owner: {
         value: 'basan',
         inclusion: true,
@@ -58,7 +58,7 @@ describe('.matchesRepo', () => {
   const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
 
   test('returns true with matched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       repo: {
         value: ['ohbarye/review-waiting-list-bot'],
         inclusion: true,
@@ -69,7 +69,7 @@ describe('.matchesRepo', () => {
   })
 
   test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       repo: {
         value: ['ohbarye/review-waiting-list-bot'],
         inclusion: false,
@@ -80,7 +80,7 @@ describe('.matchesRepo', () => {
   })
 
   test('returns false with unmatched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       repo: {
         value: ['ohbarye/kpt-bot'],
         inclusion: true,
@@ -95,7 +95,7 @@ describe('.matchesLabel', () => {
   const pr = { labels: { nodes: [{ name: 'enhancement' }] } }
 
   test('returns true with matched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       label: {
         value: ['enhancement'],
         inclusion: true,
@@ -106,7 +106,7 @@ describe('.matchesLabel', () => {
   })
 
   test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       label: {
         value: ['enhancement'],
         inclusion: false,
@@ -117,7 +117,7 @@ describe('.matchesLabel', () => {
   })
 
   test('returns false with unmatched strings', () => {
-    const pullRequest =new PullRequests([], {
+    const pullRequest = new PullRequests([], {
       label: {
         value: ['bug'],
         inclusion: true,
@@ -125,6 +125,54 @@ describe('.matchesLabel', () => {
     })
 
     expect(pullRequest.matchesLabel(pr)).toEqual(false)
+  })
+})
+
+describe('.matchesReviewer', () => {
+  const pr = {
+    reviewRequests: {
+      nodes: [
+        {
+          // When the reviewer is a user
+          requestedReviewer: {
+            login: 'ohbarye',
+          },
+        },
+      ],
+    },
+  }
+
+  test('returns true with matched strings', () => {
+    const pullRequest = new PullRequests([], {
+      reviewer: {
+        value: ['ohbarye'],
+        inclusion: true,
+      },
+    })
+
+    expect(pullRequest.matchesReviewer(pr)).toEqual(true)
+  })
+
+  test('returns false even with matched strings when inclusion is false', () => {
+    const pullRequest = new PullRequests([], {
+      reviewer: {
+        value: ['ohbarye'],
+        inclusion: false,
+      },
+    })
+
+    expect(pullRequest.matchesReviewer(pr)).toEqual(false)
+  })
+
+  test('returns false with unmatched strings', () => {
+    const pullRequest = new PullRequests([], {
+      reviewer: {
+        value: ['butcher'],
+        inclusion: true,
+      },
+    })
+
+    expect(pullRequest.matchesReviewer(pr)).toEqual(false)
   })
 })
 

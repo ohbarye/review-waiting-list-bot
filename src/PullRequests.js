@@ -3,13 +3,14 @@
 const _ = require('lodash')
 
 class PullRequests {
-  constructor(prs, {owner, repo, label}) {
+  constructor(prs, {owner, repo, label, reviewer}) {
     this.prs = prs
     this.owner = owner
     this.repo = repo
     this.label = label
+    this.reviewer = reviewer
 
-    _.bindAll(this, ['belongsToOwner', 'matchesRepo', 'matchesLabel'])
+    _.bindAll(this, ['belongsToOwner', 'matchesRepo', 'matchesLabel', 'matchesReviewer'])
   }
 
   isIgnorable(pr) {
@@ -50,6 +51,17 @@ class PullRequests {
     }
   }
 
+  matchesReviewer(pr) {
+    if (this.reviewer.value.length > 0) {
+      const result = _.some(this.reviewer.value, (_reviewer) => {
+        return _.flatMap(pr.reviewRequests.nodes, (request) => request.requestedReviewer.login).includes(_reviewer)
+      })
+      return (this.reviewer.inclusion ? result : !result)
+    } else {
+      return true
+    }
+  }
+
   formatPullRequest(pr, index) {
     return `${index+1}. \`${pr.title}\` ${pr.url} by ${pr.author.login}`
   }
@@ -60,6 +72,7 @@ class PullRequests {
       .filter(this.belongsToOwner)
       .filter(this.matchesRepo)
       .filter(this.matchesLabel)
+      .filter(this.matchesReviewer)
       .map(this.formatPullRequest)
       .value()
   }
