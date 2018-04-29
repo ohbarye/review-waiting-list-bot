@@ -138,41 +138,84 @@ describe('.matchesReviewer', () => {
             login: 'ohbarye',
           },
         },
+        {
+          // When the reviewer is a team
+          requestedReviewer: {
+            name: 'my-team',
+          },
+        },
       ],
     },
   }
 
-  test('returns true with matched strings', () => {
-    const pullRequest = new PullRequests([], {
-      reviewer: {
-        value: ['ohbarye'],
-        inclusion: true,
-      },
+  describe('given username', () => {
+    test('returns true with matched strings', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['ohbarye'],
+          inclusion: true,
+        },
+      })
+
+      expect(pullRequest.matchesReviewer(pr)).toEqual(true)
     })
 
-    expect(pullRequest.matchesReviewer(pr)).toEqual(true)
+    test('returns false even with matched strings when inclusion is false', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['ohbarye'],
+          inclusion: false,
+        },
+      })
+
+      expect(pullRequest.matchesReviewer(pr)).toEqual(false)
+    })
+
+    test('returns false with unmatched strings', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['butcher'],
+          inclusion: true,
+        },
+      })
+
+      expect(pullRequest.matchesReviewer(pr)).toEqual(false)
+    })
   })
 
-  test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest = new PullRequests([], {
-      reviewer: {
-        value: ['ohbarye'],
-        inclusion: false,
-      },
+  describe('given team name', () => {
+    test('returns true with matched strings', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['my-team'],
+          inclusion: true,
+        },
+      })
+
+      expect(pullRequest.matchesReviewer(pr)).toEqual(true)
     })
 
-    expect(pullRequest.matchesReviewer(pr)).toEqual(false)
-  })
+    test('returns false even with matched strings when inclusion is false', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['org/my-team'],
+          inclusion: false,
+        },
+      })
 
-  test('returns false with unmatched strings', () => {
-    const pullRequest = new PullRequests([], {
-      reviewer: {
-        value: ['butcher'],
-        inclusion: true,
-      },
+      expect(pullRequest.matchesReviewer(pr)).toEqual(false)
     })
 
-    expect(pullRequest.matchesReviewer(pr)).toEqual(false)
+    test('returns false with unmatched strings', () => {
+      const pullRequest = new PullRequests([], {
+        reviewer: {
+          value: ['butcher'],
+          inclusion: true,
+        },
+      })
+
+      expect(pullRequest.matchesReviewer(pr)).toEqual(false)
+    })
   })
 })
 
