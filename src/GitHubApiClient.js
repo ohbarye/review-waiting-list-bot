@@ -1,15 +1,10 @@
 'use strict'
 
 const axios = require("axios")
-const octokit = require("@octokit/rest")({
-  debug: !!process.env.DEBUG,
-  timeout: 5000,
-})
 const _ = require("lodash")
 
 class GitHubApiClient {
   constructor() {
-    this.octokit = octokit
     this.client = axios.create({
       baseURL: 'https://api.github.com/',
       timeout: 5000,
@@ -18,12 +13,7 @@ class GitHubApiClient {
         'Accept': 'application/json',
         'Authorization': `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
       },
-    });
-    const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN
-
-    if (AUTH_TOKEN) {
-      this.octokit.authenticate({type: "oauth", token: AUTH_TOKEN})
-    }
+    })
 
     _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
   }
@@ -52,19 +42,35 @@ class GitHubApiClient {
             }
           },
         }
-        }
+      }
     `
+    // TODO consider pagination
     const response = await this.client.post('graphql', { query })
     return response.data.data.search.nodes
   }
 
   async getTeamMembers(teamNameWithOrg) {
     const [orgName, teamSlug] = teamNameWithOrg.split('/')
-    const teams = await this.octokit.orgs.getTeams({org: orgName, per_page: 100})
-    const team = _.find(teams.data, { slug: teamSlug })
-
-    const teamMembers = await this.octokit.orgs.getTeamMembers({id: team.id})
-    return teamMembers.data.map((member) => member.login)
+    const query = `
+      query {
+        organization(login: "${orgName}") {
+          teams(first:100, query: "${teamSlug}") {
+            nodes {
+              name,
+              members(first:100) {
+                nodes {
+                  login
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+    // TODO consider pagination
+    const response = await this.client.post('graphql', { query })
+    const team = _.find(response.data.data.organization.teams.nodes, { name: teamSlug })
+    return team.members.nodes.map((member) => member.login)
   }
 
   async getPullRequestsForTeamOrAuthor(author) {
