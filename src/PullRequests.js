@@ -4,6 +4,7 @@ const _ = require('lodash')
 
 class PullRequests {
   constructor(prs, owner, repo, label) {
+    console.log(prs)
     this.prs = prs
     this.owner = owner
     this.repo = repo
@@ -21,7 +22,7 @@ class PullRequests {
 
   belongsToOwner(pr) {
     if (this.owner.value) {
-      const result = pr.html_url.match('^https://github.com/([^/]+)/')[1] === this.owner.value
+      const result = pr.url.match('^https://github.com/([^/]+)/')[1] === this.owner.value
       return (this.owner.inclusion ? result : !result)
     } else {
       return true
@@ -31,7 +32,7 @@ class PullRequests {
   matchesRepo(pr) {
     if (this.repo.value.length > 0) {
       const result = _.some(this.repo.value, (repo) => {
-        return pr.html_url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo
+        return pr.url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo
       })
       return (this.repo.inclusion ? result : !result)
     } else {
@@ -42,7 +43,7 @@ class PullRequests {
   matchesLabel(pr) {
     if (this.label.value.length > 0) {
       const result = _.some(this.label.value, (_label) => {
-        return _.flatMap(pr.labels, (label) => label.name).includes(_label)
+        return _.flatMap(pr.labels.nodes, (label) => label.name).includes(_label)
       })
       return (this.label.inclusion ? result : !result)
     } else {
@@ -51,11 +52,11 @@ class PullRequests {
   }
 
   formatPullRequest(pr, index) {
-    return `${index+1}. \`${pr.title}\` ${pr.html_url} by ${pr.user.login}`
+    return `${index+1}. \`${pr.title}\` ${pr.url} by ${pr.author.login}`
   }
 
   convertToSlackMessages() {
-    return _(this.prs).flatMap((prs) => prs.data.items)
+    return _(this.prs)
       .reject(this.isIgnorable)
       .filter(this.belongsToOwner)
       .filter(this.matchesRepo)

@@ -1,5 +1,6 @@
 'use strict'
 
+const axios = require("axios")
 const octokit = require("@octokit/rest")({
   debug: !!process.env.DEBUG,
   timeout: 5000,
@@ -9,6 +10,15 @@ const _ = require("lodash")
 class GitHubApiClient {
   constructor() {
     this.octokit = octokit
+    this.client = axios.create({
+      baseURL: 'https://api.github.com/',
+      timeout: 5000,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
+      },
+    });
     const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN
 
     if (AUTH_TOKEN) {
@@ -18,8 +28,34 @@ class GitHubApiClient {
     _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
   }
 
-  getPullRequestsForAuthor(author) {
-    return this.octokit.search.issues({q: `type:pr+state:open+author:${author}`})
+  async getPullRequestsForAuthor(author) {
+    const query = `
+      query {
+        search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
+          issueCount,
+          pageInfo {
+            endCursor,
+            hasNextPage,
+          },
+          nodes {
+            ... on PullRequest {
+              title,
+              url,
+              author {
+                login,
+              },
+              labels(first:100) {
+                nodes {
+                  name,
+                },
+              },
+            }
+          },
+        }
+        }
+    `
+    const response = await this.client.post('graphql', { query })
+    return response.data.data.search.nodes
   }
 
   async getTeamMembers(teamNameWithOrg) {
