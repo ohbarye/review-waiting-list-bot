@@ -1,34 +1,123 @@
 'use strict'
 
-const octokit = require("@octokit/rest")({
-  debug: !!process.env.DEBUG,
-  timeout: 5000,
-})
+const axios = require("axios")
 const _ = require("lodash")
 
 class GitHubApiClient {
   constructor() {
-    this.octokit = octokit
-    const AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN
+    this.client = axios.create({
+      baseURL: 'https://api.github.com/',
+      timeout: 5000,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
+      },
+    })
 
-    if (AUTH_TOKEN) {
-      this.octokit.authenticate({type: "oauth", token: AUTH_TOKEN})
-    }
-
-    _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
+    _.bindAll(this, ['getPullRequestsForAuthorQuery', 'getPullRequestsForAuthor', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
   }
 
-  getPullRequestsForAuthor(author) {
-    return this.octokit.search.issues({q: `type:pr+state:open+author:${author}`})
+  // This query results below.
+  //
+  // {
+  //   "data": {
+  //     "search": {
+  //       "nodes": [
+  //         {
+  //           "title": "Enable to fetch pull requests by specifying assignee",
+  //           "url": "https://github.com/ohbarye/review-waiting-list-bot/pull/26",
+  //           "author": {
+  //             "login": "ohbarye"
+  //           },
+  //           "labels": {
+  //             "nodes": [
+  //               {
+  //                 "name": "enhancement"
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       ]
+  //     }
+  //   }
+  // }
+  getPullRequestsForAuthorQuery(author) {
+    // TODO consider pagination
+    return `
+      query {
+        search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
+          nodes {
+            ... on PullRequest {
+              title,
+              url,
+              author {
+                login,
+              },
+              labels(first:100) {
+                nodes {
+                  name,
+                },
+              },
+            }
+          },
+        }
+      }`
+  }
+
+  async getPullRequestsForAuthor(author) {
+    const query = this.getPullRequestsForAuthorQuery(author)
+    const response = await this.client.post('graphql', { query })
+    return response.data.data.search.nodes
+  }
+
+  // This query results below.
+  //
+  // {
+  //   "data": {
+  //     "organization": {
+  //       "teams": {
+  //         "nodes": [
+  //           {
+  //             "name": "ok-go",
+  //             "members": {
+  //               "nodes": [
+  //                 {
+  //                   "login": "ohbarye"
+  //                 }
+  //               ]
+  //             }
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   }
+  // }
+  getTeamMembersQuery(orgName, teamSlug) {
+    // TODO consider pagination
+    return `
+      query {
+        organization(login: "${orgName}") {
+          teams(first:100, query: "${teamSlug}") {
+            nodes {
+              name,
+              members(first:100) {
+                nodes {
+                  login
+                }
+              }
+            }
+          }
+        }
+      }`
   }
 
   async getTeamMembers(teamNameWithOrg) {
     const [orgName, teamSlug] = teamNameWithOrg.split('/')
-    const teams = await this.octokit.orgs.getTeams({org: orgName, per_page: 100})
-    const team = _.find(teams.data, { slug: teamSlug })
-
-    const teamMembers = await this.octokit.orgs.getTeamMembers({id: team.id})
-    return teamMembers.data.map((member) => member.login)
+    const query = this.getTeamMembersQuery(orgName, teamSlug)
+    const response = await this.client.post('graphql', { query })
+    const team = _.find(response.data.data.organization.teams.nodes, { name: teamSlug })
+    return team.members.nodes.map((member) => member.login)
   }
 
   async getPullRequestsForTeamOrAuthor(author) {

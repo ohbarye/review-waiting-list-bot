@@ -4,16 +4,8 @@ const Botkit = require('botkit')
 
 class SlackBot {
   constructor() {
-    const slackBotToken = process.env.SLACK_BOT_TOKEN
-
-    if (!slackBotToken) {
-      console.log('Error: Specify token in environment')
-      process.exit(1)
-    }
-
     this.controller = Botkit.slackbot({debug: !!process.env.DEBUG})
-
-    this.controller.spawn({token: slackBotToken})
+    this.controller.spawn({token: process.env.SLACK_BOT_TOKEN})
       .startRTM((err, _bot, _payload) => {
         if (err) throw new Error('Could not connect to Slack')
       })

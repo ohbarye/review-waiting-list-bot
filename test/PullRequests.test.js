@@ -18,7 +18,7 @@ describe('.isIgnorable', () => {
 })
 
 describe('.belongsToOwner', () => {
-  const pr = { html_url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
+  const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
 
   test('returns true with matched strings', () => {
     const pullRequest = new PullRequests(null, {
@@ -49,7 +49,7 @@ describe('.belongsToOwner', () => {
 })
 
 describe('.matchesRepo', () => {
-  const pr = { html_url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
+  const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
 
   test('returns true with matched strings', () => {
     const pullRequest = new PullRequests(null, null, {
@@ -80,7 +80,7 @@ describe('.matchesRepo', () => {
 })
 
 describe('.matchesLabel', () => {
-  const pr = { labels: [{ name: 'enhancement' }] }
+  const pr = { labels: { nodes: [{ name: 'enhancement' }] } }
 
   test('returns true with matched strings', () => {
     const pullRequest = new PullRequests(null, null, null, {
@@ -113,8 +113,8 @@ describe('.matchesLabel', () => {
 describe('.formatPullRequest', () => {
   const pr = {
     title: 'Add some tests',
-    html_url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
-    user: { login: 'ohbarye' },
+    url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
+    author: { login: 'ohbarye' },
   }
 
   test('returns true with matched strings', () => {

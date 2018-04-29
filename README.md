@@ -88,3 +88,11 @@ If you do not have it yet, visit https://my.slack.com/services/new/bot and get t
 
 GitHub bot API token.
 If you're not familiar with it, see https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+
+#### Note about scopes of GITHUB_AUTH_TOKEN
+
+You need to grant your token the following required scopes to execute queries from the bot.
+
+- `repo`
+- `read:org`
+- `read:discussion`
