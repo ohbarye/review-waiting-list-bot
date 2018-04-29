@@ -15,11 +15,36 @@ class GitHubApiClient {
       },
     })
 
-    _.bindAll(this, ['getPullRequestsForAuthor', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
+    _.bindAll(this, ['getPullRequestsForAuthorQuery', 'getPullRequestsForAuthor', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
   }
 
-  async getPullRequestsForAuthor(author) {
-    const query = `
+  // This query results below.
+  //
+  // {
+  //   "data": {
+  //     "search": {
+  //       "nodes": [
+  //         {
+  //           "title": "Enable to fetch pull requests by specifying assignee",
+  //           "url": "https://github.com/ohbarye/review-waiting-list-bot/pull/26",
+  //           "author": {
+  //             "login": "ohbarye"
+  //           },
+  //           "labels": {
+  //             "nodes": [
+  //               {
+  //                 "name": "enhancement"
+  //               }
+  //             ]
+  //           }
+  //         }
+  //       ]
+  //     }
+  //   }
+  // }
+  getPullRequestsForAuthorQuery(author) {
+    // TODO consider pagination
+    return `
       query {
         search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
           nodes {
@@ -37,16 +62,40 @@ class GitHubApiClient {
             }
           },
         }
-      }
-    `
-    // TODO consider pagination
+      }`
+  }
+
+  async getPullRequestsForAuthor(author) {
+    const query = this.getPullRequestsForAuthorQuery(author)
     const response = await this.client.post('graphql', { query })
     return response.data.data.search.nodes
   }
 
-  async getTeamMembers(teamNameWithOrg) {
-    const [orgName, teamSlug] = teamNameWithOrg.split('/')
-    const query = `
+  // This query results below.
+  //
+  // {
+  //   "data": {
+  //     "organization": {
+  //       "teams": {
+  //         "nodes": [
+  //           {
+  //             "name": "ok-go",
+  //             "members": {
+  //               "nodes": [
+  //                 {
+  //                   "login": "ohbarye"
+  //                 }
+  //               ]
+  //             }
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   }
+  // }
+  getTeamMembersQuery(orgName, teamSlug) {
+    // TODO consider pagination
+    return `
       query {
         organization(login: "${orgName}") {
           teams(first:100, query: "${teamSlug}") {
@@ -60,9 +109,12 @@ class GitHubApiClient {
             }
           }
         }
-      }
-    `
-    // TODO consider pagination
+      }`
+  }
+
+  async getTeamMembers(teamNameWithOrg) {
+    const [orgName, teamSlug] = teamNameWithOrg.split('/')
+    const query = this.getTeamMembersQuery(orgName, teamSlug)
     const response = await this.client.post('graphql', { query })
     const team = _.find(response.data.data.organization.teams.nodes, { name: teamSlug })
     return team.members.nodes.map((member) => member.login)
