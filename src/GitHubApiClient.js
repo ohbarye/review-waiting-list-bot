@@ -14,8 +14,6 @@ class GitHubApiClient {
         'Authorization': `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
       },
     })
-
-    _.bindAll(this, ['getPullRequestsForAuthorsQuery', 'getPullRequestsForAuthors', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests'])
   }
 
   // This query results below.
