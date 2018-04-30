@@ -17,7 +17,6 @@ class App {
 
   static ls(bot, message) {
     const conditions = new Parser(message.match[1]).parse()
-    console.log(conditions)
 
     const client = new GitHubApiClient()
 

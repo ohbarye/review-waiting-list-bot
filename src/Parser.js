@@ -9,7 +9,6 @@ class Parser {
   }
 
   parse() {
-    console.log('tetets')
     return Condition.ACCEPTABLE_CONDITIONS.reduce((obj, key) => {
       return {
         ...obj,
