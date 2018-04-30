@@ -15,7 +15,7 @@ class GitHubApiClient {
       },
     })
 
-    _.bindAll(this, ['getPullRequestsForAuthorQuery', 'getPullRequestsForAuthor', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests', 'getPullRequestsForTeamOrAuthor'])
+    _.bindAll(this, ['getPullRequestsForAuthorsQuery', 'getPullRequestsForAuthors', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests'])
   }
 
   // This query results below.
@@ -52,11 +52,12 @@ class GitHubApiClient {
   //     }
   //   }
   // }
-  getPullRequestsForAuthorQuery(author) {
+  getPullRequestsForAuthorsQuery(authors) {
     // TODO consider pagination
+    const authorsQuery = authors.map((author) => `author:${author}`).join(' ')
     return `
       query {
-        search(first:100, query:"type:pr author:${author} state:open", type: ISSUE) {
+        search(first:100, query:"type:pr ${authorsQuery} state:open", type: ISSUE) {
           nodes {
             ... on PullRequest {
               title,
@@ -87,8 +88,8 @@ class GitHubApiClient {
       }`
   }
 
-  async getPullRequestsForAuthor(author) {
-    const query = this.getPullRequestsForAuthorQuery(author)
+  async getPullRequestsForAuthors(authors) {
+    const query = this.getPullRequestsForAuthorsQuery(authors)
     const response = await this.client.post('graphql', { query })
     return response.data.data.search.nodes
   }
@@ -142,17 +143,15 @@ class GitHubApiClient {
     return team.members.nodes.map((member) => member.login)
   }
 
-  async getPullRequestsForTeamOrAuthor(author) {
-    if (this.isTeam(author)) {
-      const teamMembers = await this.getTeamMembers(author)
-      return Promise.all(_.flatMap(teamMembers, this.getPullRequestsForAuthor))
-    } else {
-      return this.getPullRequestsForAuthor(author)
-    }
-  }
-
   async getAllPullRequests(authors) {
-    const prs = await Promise.all(authors.value.map(this.getPullRequestsForTeamOrAuthor))
+    const authorNames = _(await Promise.all(
+      authors.value.map((author) => {
+        return this.isTeam(author) ? this.getTeamMembers(author) : author
+      })
+    )).flatten()
+      .uniq()
+      .value()
+    const prs = await this.getPullRequestsForAuthors(authorNames)
     return _.flattenDeep(prs)
   }
 
