@@ -16,11 +16,11 @@ class App {
   }
 
   static ls(bot, message) {
-    const {authors, ...conditions} = new Parser(message.match[1]).parse()
+    const conditions = new Parser(message.match[1]).parse()
 
     const client = new GitHubApiClient()
 
-    client.getAllPullRequests(authors).then((prs) => {
+    client.getAllPullRequests(conditions).then((prs) => {
       bot.startConversation(message, (err, convo) => {
         convo.say(':memo: Review waiting list!')
 

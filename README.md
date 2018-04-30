@@ -28,7 +28,7 @@ For more detailed query:
 argument | presence | description
 --- | --- | ---
 author | Required | You can specify multiple authors with comma separated values. Also `org/team` is available.
-owner | Optional | It allows only one owner. If you specify this argument with `-` (e.g. `-owner:ohbarye`), it excludes pull requests of the owner.
+owner | Optional | You can specify multiple owners. If you specify this argument with `-` (e.g. `-owner:ohbarye`), it excludes pull requests of the owner.
 repo | Optional | You can specify multiple repositories. If you specify this argument with `-` (e.g. `-repo:ohbarye/review-waiting-list-bot`), it excludes pull requests in the repositories.
 label | Optional | You can specify multiple labels. If you specify this argument with `-` (e.g. `-label:enhancement`), it excludes pull requests in the repository.
 reviewer | Optional | You can specify multiple reviewers. If you specify this argument with `-` (e.g. `-reviewer:ohbarye`), it excludes pull requests in the repository. Regarding review requests feature on GitHub, see https://blog.github.com/2016-12-07-introducing-review-requests/

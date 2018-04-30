@@ -3,14 +3,12 @@
 const _ = require('lodash')
 
 class PullRequests {
-  constructor(prs, {owner, repo, label, reviewer}) {
+  constructor(prs, {label, reviewer}) {
     this.prs = prs
-    this.owner = owner
-    this.repo = repo
     this.label = label
     this.reviewer = reviewer
 
-    _.bindAll(this, ['belongsToOwner', 'matchesRepo', 'matchesLabel', 'matchesReviewer'])
+    _.bindAll(this, ['matchesLabel', 'matchesReviewer'])
   }
 
   isIgnorable(pr) {
@@ -20,29 +18,9 @@ class PullRequests {
     return !!sanitizedTitle.match(regex)
   }
 
-  belongsToOwner(pr) {
-    if (this.owner.value) {
-      const result = pr.url.match('^https://github.com/([^/]+)/')[1] === this.owner.value
-      return (this.owner.inclusion ? result : !result)
-    } else {
-      return true
-    }
-  }
-
-  matchesRepo(pr) {
-    if (this.repo.value.length > 0) {
-      const result = _.some(this.repo.value, (repo) => {
-        return pr.url.match('^https://github.com/([^/]+/[^/]+)/')[1] === repo
-      })
-      return (this.repo.inclusion ? result : !result)
-    } else {
-      return true
-    }
-  }
-
   matchesLabel(pr) {
-    if (this.label.value.length > 0) {
-      const result = _.some(this.label.value, (_label) => {
+    if (this.label.values.length > 0) {
+      const result = _.some(this.label.values, (_label) => {
         return _.flatMap(pr.labels.nodes, (label) => label.name).includes(_label)
       })
       return (this.label.inclusion ? result : !result)
@@ -52,8 +30,8 @@ class PullRequests {
   }
 
   matchesReviewer(pr) {
-    if (this.reviewer.value.length > 0) {
-      const result = _.some(this.reviewer.value, (_reviewer) => {
+    if (this.reviewer.values.length > 0) {
+      const result = _.some(this.reviewer.values, (_reviewer) => {
         // Reviewer could be a user or a team
         const matched = _reviewer.match(/^.+\/(.+)$/)
         const usernameOrTeamName = matched ? matched[1] : _reviewer
@@ -75,8 +53,6 @@ class PullRequests {
   convertToSlackMessages() {
     return _(this.prs)
       .reject(this.isIgnorable)
-      .filter(this.belongsToOwner)
-      .filter(this.matchesRepo)
       .filter(this.matchesLabel)
       .filter(this.matchesReviewer)
       .map(this.formatPullRequest)

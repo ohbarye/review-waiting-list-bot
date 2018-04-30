@@ -14,8 +14,6 @@ class GitHubApiClient {
         'Authorization': `Bearer ${process.env.GITHUB_AUTH_TOKEN}`,
       },
     })
-
-    _.bindAll(this, ['getPullRequestsForAuthorsQuery', 'getPullRequestsForAuthors', 'getTeamMembersQuery', 'getTeamMembers', 'isTeam', 'getAllPullRequests'])
   }
 
   // This query results below.
@@ -52,12 +50,11 @@ class GitHubApiClient {
   //     }
   //   }
   // }
-  getPullRequestsForAuthorsQuery(authors) {
+  getPullRequestsForAuthorsQuery(author, repo, user) {
     // TODO consider pagination
-    const authorsQuery = authors.map((author) => `author:${author}`).join(' ')
     return `
       query {
-        search(first:100, query:"type:pr ${authorsQuery} state:open", type: ISSUE) {
+        search(first:100, query:"type:pr ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
           nodes {
             ... on PullRequest {
               title,
@@ -88,8 +85,8 @@ class GitHubApiClient {
       }`
   }
 
-  async getPullRequestsForAuthors(authors) {
-    const query = this.getPullRequestsForAuthorsQuery(authors)
+  async getPullRequestsForAuthors(author, repo, user) {
+    const query = this.getPullRequestsForAuthorsQuery(author, repo, user)
     const response = await this.client.post('graphql', { query })
     return response.data.data.search.nodes
   }
@@ -143,15 +140,15 @@ class GitHubApiClient {
     return team.members.nodes.map((member) => member.login)
   }
 
-  async getAllPullRequests(authors) {
-    const authorNames = _(await Promise.all(
-      authors.value.map((author) => {
+  async getAllPullRequests({author, repo, user}) {
+    author.values = _(await Promise.all(
+      author.values.map((author) => {
         return this.isTeam(author) ? this.getTeamMembers(author) : author
       })
     )).flatten()
       .uniq()
       .value()
-    const prs = await this.getPullRequestsForAuthors(authorNames)
+    const prs = await this.getPullRequestsForAuthors(author, repo, user)
     return _.flattenDeep(prs)
   }
 
