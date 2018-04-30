@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "botkit": "^0.5.5",
-    "lodash": "^4.17.4"
+    "botkit": "^0.6.13",
+    "lodash": "^4.17.10"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
