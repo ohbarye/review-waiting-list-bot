@@ -21,15 +21,15 @@ class Parser {
     const keyName = argName === 'user' ? 'owner' : argName // TODO this is Workaround to convert
     const regexp = new RegExp(`-?${keyName}:([A-z0-9-,/]+)`)
     const matched = this.args.match(regexp)
+    return new Condition(argName, ...this.convertToConditionArgs(matched))
+  }
 
-    if (matched) {
-      return new Condition(argName,
-        _.compact(_.trim(matched[1]).split(',')),
-        !_.startsWith(matched[0], '-'),
-      )
-    } else {
-      return new Condition(argName)
-    }
+  convertToConditionArgs(matched) {
+    return matched ? [
+                       _.compact(_.trim(matched[1]).split(',')),
+                      !_.startsWith(matched[0], '-'),
+                     ]
+                     : []
   }
 }
 
