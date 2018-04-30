@@ -1,27 +1,13 @@
 const Parser = require('../src/Parser')
+const Condition = require('../src/Condition')
 
 test('.parse() works with simple arguments', () => {
-  const parser = new Parser("author:cat owner:host repo:pethouse label:meow reviewer:dog")
+  const parser = new Parser("author:cat owner:host repo:pethouse label:meow -reviewer:dog")
   expect(parser.parse()).toEqual({
-    authors: {
-      inclusion: true,
-      value: ['cat'],
-    },
-    owner: {
-      inclusion: true,
-      value: 'host',
-    },
-    repo: {
-      inclusion: true,
-      value: ['pethouse'],
-    },
-    label: {
-      inclusion: true,
-      value: ['meow'],
-    },
-    reviewer: {
-      inclusion: true,
-      value: ['dog'],
-    },
+    author: new Condition('author', ['cat'], true),
+    user: new Condition('user', ['host'], true),
+    repo: new Condition('repo', ['pethouse'], true),
+    label: new Condition('label', ['meow'], true),
+    reviewer: new Condition('reviewer', ['dog'], false),
   })
 })

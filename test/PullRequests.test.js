@@ -1,4 +1,5 @@
 const PullRequests = require('../src/PullRequests')
+const Condition = require('../src/Condition')
 
 describe('.isIgnorable', () => {
   test('returns true with matched strings', () => {
@@ -17,89 +18,12 @@ describe('.isIgnorable', () => {
   })
 })
 
-describe('.belongsToOwner', () => {
-  const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
-
-  test('returns true with matched strings', () => {
-    const pullRequest = new PullRequests([], {
-      owner: {
-        value: 'ohbarye',
-        inclusion: true,
-      },
-    })
-
-    expect(pullRequest.belongsToOwner(pr)).toEqual(true)
-  })
-
-  test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest = new PullRequests([], {
-      owner: {
-        value: 'ohbarye',
-        inclusion: false,
-      },
-    })
-
-    expect(pullRequest.belongsToOwner(pr)).toEqual(false)
-  })
-
-  test('returns false with unmatched strings', () => {
-    const pullRequest = new PullRequests([], {
-      owner: {
-        value: 'basan',
-        inclusion: true,
-      },
-    })
-
-    expect(pullRequest.belongsToOwner(pr)).toEqual(false)
-  })
-})
-
-describe('.matchesRepo', () => {
-  const pr = { url: "https://github.com/ohbarye/review-waiting-list-bot/pull/34" }
-
-  test('returns true with matched strings', () => {
-    const pullRequest = new PullRequests([], {
-      repo: {
-        value: ['ohbarye/review-waiting-list-bot'],
-        inclusion: true,
-      },
-    })
-
-    expect(pullRequest.matchesRepo(pr)).toEqual(true)
-  })
-
-  test('returns false even with matched strings when inclusion is false', () => {
-    const pullRequest = new PullRequests([], {
-      repo: {
-        value: ['ohbarye/review-waiting-list-bot'],
-        inclusion: false,
-      },
-    })
-
-    expect(pullRequest.matchesRepo(pr)).toEqual(false)
-  })
-
-  test('returns false with unmatched strings', () => {
-    const pullRequest = new PullRequests([], {
-      repo: {
-        value: ['ohbarye/kpt-bot'],
-        inclusion: true,
-      },
-    })
-
-    expect(pullRequest.matchesRepo(pr)).toEqual(false)
-  })
-})
-
 describe('.matchesLabel', () => {
   const pr = { labels: { nodes: [{ name: 'enhancement' }] } }
 
   test('returns true with matched strings', () => {
     const pullRequest = new PullRequests([], {
-      label: {
-        value: ['enhancement'],
-        inclusion: true,
-      },
+      label: new Condition('label', ['enhancement'], true),
     })
 
     expect(pullRequest.matchesLabel(pr)).toEqual(true)
@@ -107,10 +31,7 @@ describe('.matchesLabel', () => {
 
   test('returns false even with matched strings when inclusion is false', () => {
     const pullRequest = new PullRequests([], {
-      label: {
-        value: ['enhancement'],
-        inclusion: false,
-      },
+      label: new Condition('label', ['enhancement'], false),
     })
 
     expect(pullRequest.matchesLabel(pr)).toEqual(false)
@@ -118,10 +39,7 @@ describe('.matchesLabel', () => {
 
   test('returns false with unmatched strings', () => {
     const pullRequest = new PullRequests([], {
-      label: {
-        value: ['bug'],
-        inclusion: true,
-      },
+      label: new Condition('label', ['bug'], true),
     })
 
     expect(pullRequest.matchesLabel(pr)).toEqual(false)
@@ -151,10 +69,7 @@ describe('.matchesReviewer', () => {
   describe('given username', () => {
     test('returns true with matched strings', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['ohbarye'],
-          inclusion: true,
-        },
+        reviewer: new Condition('reviewer', ['ohbarye'], true),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(true)
@@ -162,10 +77,7 @@ describe('.matchesReviewer', () => {
 
     test('returns false even with matched strings when inclusion is false', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['ohbarye'],
-          inclusion: false,
-        },
+        reviewer: new Condition('reviewer', ['ohbarye'], false),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(false)
@@ -173,10 +85,7 @@ describe('.matchesReviewer', () => {
 
     test('returns false with unmatched strings', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['butcher'],
-          inclusion: true,
-        },
+        reviewer: new Condition('reviewer', ['butcher'], true),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(false)
@@ -186,10 +95,7 @@ describe('.matchesReviewer', () => {
   describe('given team name', () => {
     test('returns true with matched strings', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['my-team'],
-          inclusion: true,
-        },
+        reviewer: new Condition('reviewer', ['my-team'], true),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(true)
@@ -197,10 +103,7 @@ describe('.matchesReviewer', () => {
 
     test('returns false even with matched strings when inclusion is false', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['org/my-team'],
-          inclusion: false,
-        },
+        reviewer: new Condition('reviewer', ['org/my-team'], false),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(false)
@@ -208,10 +111,7 @@ describe('.matchesReviewer', () => {
 
     test('returns false with unmatched strings', () => {
       const pullRequest = new PullRequests([], {
-        reviewer: {
-          value: ['butcher'],
-          inclusion: true,
-        },
+        reviewer: new Condition('reviewer', ['butcher'], true),
       })
 
       expect(pullRequest.matchesReviewer(pr)).toEqual(false)
