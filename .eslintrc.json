@@ -3,6 +3,7 @@
   "plugins": [
     "jest"
   ],
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 8
   },
