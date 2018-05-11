@@ -137,7 +137,7 @@ class GitHubApiClient {
     const query = this.getTeamMembersQuery(orgName, teamSlug)
     const response = await this.client.post('graphql', { query })
     const team = _.find(response.data.data.organization.teams.nodes, { name: teamSlug })
-    return team.members.nodes.map((member) => member.login)
+    return team ? team.members.nodes.map((member) => member.login): []
   }
 
   async getAllPullRequests({author, repo, user}) {
