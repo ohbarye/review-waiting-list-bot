@@ -50,11 +50,15 @@ class GitHubApiClient {
   //     }
   //   }
   // }
-  getPullRequestsForAuthorsQuery(author, repo, user) {
-    // TODO consider pagination
+  getPullRequestsForAuthorsQuery(author, repo, user, endCursor) {
+    const after = endCursor ? `after:"${endCursor}",` : ''
     return `
       query {
-        search(first:100, query:"type:pr ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
+        search(first:100, ${after} query:"type:pr ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
+          pageInfo {
+            endCursor,
+            hasNextPage,
+          },
           nodes {
             ... on PullRequest {
               title,
@@ -86,9 +90,17 @@ class GitHubApiClient {
   }
 
   async getPullRequestsForAuthors(author, repo, user) {
-    const query = this.getPullRequestsForAuthorsQuery(author, repo, user)
-    const response = await this.client.post('graphql', { query })
-    return response.data.data.search.nodes
+    let endCursor = undefined
+    let hasNextPage = true
+    let nodes = []
+    while (hasNextPage) {
+      const query = this.getPullRequestsForAuthorsQuery(author, repo, user, endCursor)
+      const response = await this.client.post('graphql', { query })
+      endCursor = response.data.data.search.pageInfo.endCursor
+      hasNextPage = response.data.data.search.pageInfo.hasNextPage
+      nodes = nodes.concat(response.data.data.search.nodes)
+    }
+    return nodes
   }
 
   // This query results below.
