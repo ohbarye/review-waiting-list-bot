@@ -79,7 +79,7 @@ If you want to deploy to Heroku, just click following button.
 Pull the Docker image and run with your Slack bot token and GitHub auth token.
 
 ```sh
-docker pull ohbarye/review-waiting-list
+docker pull ohbarye/review-waiting-list-bot
 docker run -e SLACK_BOT_TOKEN=your-slack-bot-token -e GITHUB_AUTH_TOKEN=your-github-auth-token ohbarye/review-waiting-list-bot
 ```
 
