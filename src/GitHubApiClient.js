@@ -2,7 +2,6 @@
 
 const axios = require("axios")
 const _ = require("lodash")
-
 class GitHubApiClient {
   constructor() {
     this.client = axios.create({
@@ -50,11 +49,11 @@ class GitHubApiClient {
   //     }
   //   }
   // }
-  getPullRequestsForAuthorsQuery(author, repo, user, endCursor) {
+  getPullRequestsForAuthorsQuery(author, repo, user, org, reviewRequested, endCursor) {
     const after = endCursor ? `after:"${endCursor}",` : ''
     return `
       query {
-        search(first:100, ${after} query:"type:pr ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
+        search(first:100, ${after} query:"type:pr ${author.toQuery()} ${org.toQuery()} ${reviewRequested.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
           pageInfo {
             endCursor,
             hasNextPage,
@@ -89,12 +88,12 @@ class GitHubApiClient {
       }`
   }
 
-  async getPullRequestsForAuthors(author, repo, user) {
+  async getPullRequestsForAuthors(author, repo, user, org, reviewRequested) {
     let endCursor = undefined
     let hasNextPage = true
     let nodes = []
     while (hasNextPage) {
-      const query = this.getPullRequestsForAuthorsQuery(author, repo, user, endCursor)
+      const query = this.getPullRequestsForAuthorsQuery(author, repo, user, org, reviewRequested, endCursor)
       const response = await this.client.post('graphql', { query })
       endCursor = response.data.data.search.pageInfo.endCursor
       hasNextPage = response.data.data.search.pageInfo.hasNextPage
@@ -152,7 +151,14 @@ class GitHubApiClient {
     return team ? team.members.nodes.map((member) => member.login): []
   }
 
-  async getAllPullRequests({author, repo, user}) {
+  async getAllPullRequests(conditions) {
+
+    const author = conditions['author']
+    const repo = conditions['repo']
+    const user = conditions['user']
+    const org = conditions['org']
+    const reviewRequested = conditions['review-requested']
+
     author.values = _(await Promise.all(
       author.values.map((author) => {
         return this.isTeam(author) ? this.getTeamMembers(author) : author
@@ -160,7 +166,16 @@ class GitHubApiClient {
     )).flatten()
       .uniq()
       .value()
-    const prs = await this.getPullRequestsForAuthors(author, repo, user)
+
+    reviewRequested.values = _(await Promise.all(
+      reviewRequested.values.map((reviewer)=> {
+        return this.isTeam(reviewer) ? this.getTeamMembers(reviewer) : reviewer
+      })
+    )).flatten()
+      .uniq()
+      .value()
+
+    const prs = await this.getPullRequestsForAuthors(author, repo, user, org, reviewRequested)
     return _.flattenDeep(prs)
   }
 
