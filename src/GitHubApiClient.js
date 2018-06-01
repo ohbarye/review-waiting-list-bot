@@ -2,6 +2,7 @@
 
 const axios = require("axios")
 const _ = require("lodash")
+
 class GitHubApiClient {
   constructor() {
     this.client = axios.create({
