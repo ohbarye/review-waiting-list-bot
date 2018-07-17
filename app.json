@@ -20,11 +20,11 @@
   "formation": {
     "web": {
       "quantity": 0,
-      "size": "free"
+      "size": "standard-1x"
     },
     "worker": {
       "quantity": 1,
-      "size": "free"
+      "size": "standard-1x"
     }
   },
   "image": "heroku/nodejs"
