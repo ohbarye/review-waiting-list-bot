@@ -120,16 +120,36 @@ describe('.matchesReviewer', () => {
 })
 
 describe('.formatPullRequest', () => {
-  const pr = {
-    title: 'Add some tests',
-    url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
-    author: { login: 'ohbarye' },
-  }
-
-  test('returns formatted string', () => {
+  test('returns formatted string without reviewer name when no review assigned', () => {
     const pullRequest = new PullRequests([], {})
+    const pr = {
+      title: 'Add some tests',
+      url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
+      author: { login: 'ohbarye' },
+      reviewRequests: {
+        nodes: [],
+      },
+    }
     expect(pullRequest.formatPullRequest(pr, 0)).toEqual(
-      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye'
+      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (no reviewer assigned)'
+    )
+  })
+
+  test('returns formatted string with reviewer name when someone assigned', () => {
+    const pullRequest = new PullRequests([], {})
+    const pr = {
+      title: 'Add some tests',
+      url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
+      author: { login: 'ohbarye' },
+      reviewRequests: {
+        nodes: [
+          { requestedReviewer: { login:  'basan' }},
+          { requestedReviewer: { name:  'team-b' }},
+        ],
+      },
+    }
+    expect(pullRequest.formatPullRequest(pr, 0)).toEqual(
+      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (reviewer: basan, team-b)'
     )
   })
 })
