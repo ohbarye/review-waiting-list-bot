@@ -50,11 +50,11 @@ class GitHubApiClient {
   //     }
   //   }
   // }
-  getPullRequestsForAuthorsQuery(author, repo, user, endCursor) {
+  getPullRequestsForAuthorsQuery(org, author, repo, user, endCursor) {
     const after = endCursor ? `after:"${endCursor}",` : ''
     return `
       query {
-        search(first:100, ${after} query:"type:pr ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
+        search(first:100, ${after} query:"type:pr ${org.toQuery()} ${author.toQuery()} ${repo.toQuery()} ${user.toQuery()} state:open", type: ISSUE) {
           pageInfo {
             endCursor,
             hasNextPage,
@@ -89,12 +89,12 @@ class GitHubApiClient {
       }`
   }
 
-  async getPullRequestsForAuthors(author, repo, user) {
+  async getPullRequestsForAuthors(org, author, repo, user) {
     let endCursor = undefined
     let hasNextPage = true
     let nodes = []
     while (hasNextPage) {
-      const query = this.getPullRequestsForAuthorsQuery(author, repo, user, endCursor)
+      const query = this.getPullRequestsForAuthorsQuery(org, author, repo, user, endCursor)
       const response = await this.client.post('graphql', { query })
       endCursor = response.data.data.search.pageInfo.endCursor
       hasNextPage = response.data.data.search.pageInfo.hasNextPage
@@ -152,7 +152,7 @@ class GitHubApiClient {
     return team ? team.members.nodes.map((member) => member.login): []
   }
 
-  async getAllPullRequests({author, repo, user}) {
+  async getAllPullRequests({org, author, repo, user}) {
     author.values = _(await Promise.all(
       author.values.map((author) => {
         return this.isTeam(author) ? this.getTeamMembers(author) : author
@@ -160,7 +160,7 @@ class GitHubApiClient {
     )).flatten()
       .uniq()
       .value()
-    const prs = await this.getPullRequestsForAuthors(author, repo, user)
+    const prs = await this.getPullRequestsForAuthors(org, author, repo, user)
     return _.flattenDeep(prs)
   }
 
