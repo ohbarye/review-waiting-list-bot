@@ -1,4 +1,4 @@
-# Encourage your team to review pull requests
+# Let's encourage your team to review PRs!
 
 [![Build Status](https://travis-ci.org/ohbarye/review-waiting-list-bot.svg?branch=master)](https://travis-ci.org/ohbarye/review-waiting-list-bot)
 
