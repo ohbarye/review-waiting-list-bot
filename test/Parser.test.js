@@ -4,6 +4,7 @@ const Condition = require('../src/Condition')
 test('.parse() works with simple arguments', () => {
   const parser = new Parser("author:cat owner:host repo:pethouse label:meow -reviewer:dog")
   expect(parser.parse()).toEqual({
+    org: new Condition('org', [], true),
     author: new Condition('author', ['cat'], true),
     user: new Condition('user', ['host'], true),
     repo: new Condition('repo', ['pethouse'], true),
@@ -14,7 +15,10 @@ test('.parse() works with simple arguments', () => {
 
 test('.parse() works even when arguments have quotations', () => {
   const parser = new Parser(`author:cat owner:'host' repo:"pethouse/watchdog" label:"good first","bug" -reviewer:“dog”`)
+  process.env.GITHUB_ORGANIZATION = 'my-org'
+
   expect(parser.parse()).toEqual({
+    org: new Condition('org', ['my-org'], true),
     author: new Condition('author', ['cat'], true),
     user: new Condition('user', ['host'], true),
     repo: new Condition('repo', ['pethouse/watchdog'], true),
