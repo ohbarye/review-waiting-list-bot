@@ -68,21 +68,6 @@ $ yarn test
 $ yarn lint
 ```
 
-## Deployment
-
-If you want to deploy to Heroku, just click following button.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-### Run with Docker
-
-Pull the Docker image and run with your Slack bot token and GitHub auth token.
-
-```sh
-docker pull ohbarye/review-waiting-list-bot
-docker run -e SLACK_BOT_TOKEN=your-slack-bot-token -e GITHUB_AUTH_TOKEN=your-github-auth-token ohbarye/review-waiting-list-bot
-```
-
 ## Environment Variables
 
 ### SLACK_BOT_TOKEN (required)
@@ -104,3 +89,97 @@ You need to grant your token the following required scopes to execute queries fr
 - `repo`
 - `read:org`
 - `read:discussion`
+
+### GITHUB_ORGANIZATION (optional)
+
+GitHub organization name.
+Setting this will force the PR's to be scoped to the GitHub organization with that name.
+
+## Deployment
+
+If you want to deploy to Heroku, just click following button.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+### Run with Docker
+
+Pull the Docker image and run with your Slack bot token and GitHub auth token.
+
+```sh
+docker pull ohbarye/review-waiting-list-bot
+docker run -e SLACK_BOT_TOKEN=your-slack-bot-token -e GITHUB_AUTH_TOKEN=your-github-auth-token ohbarye/review-waiting-list-bot
+```
+
+## Run with Kubernetes
+
+Create a deployment e.g:
+```yaml
+# deployment.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-waiting-list-bot
+  labels:
+    app: review-waiting-list-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-waiting-list-bot
+  template:
+    metadata:
+      labels:
+        app: review-waiting-list-bot
+    spec:
+      containers:
+      - name: review-waiting-list-bot
+        image: ohbarye/review-waiting-list-bot
+        env:
+        - name: GITHUB_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: github-auth-token
+              name: review-waiting-list-bot-secrets
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: slack-bot-token
+              name: review-waiting-list-bot-secrets
+        - name: GITHUB_ORGANIZATION
+          value: your-github-org
+        ports:
+        - containerPort: 80
+```
+
+Create a secrets file:
+
+```yaml
+# secrets.yml
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: review-waiting-list-bot-secrets
+  namespace: default
+data:
+  github-auth-token: <insert base64 github-auth-token>
+  slack-bot-token: <insert base64 slack-bot-token>
+```
+
+Get the base64-encoded values of `GITHUB_AUTH_TOKEN` and `SLACK_BOT_TOKEN`
+
+```sh
+echo -n $GITHUB_AUTH_TOKEN | base64
+echo -n $SLACK_BOT_TOKEN | base64
+```
+
+Store these values in the secrets file.
+
+Create the resources:
+
+```sh
+kubectl apply -f secrets.yml
+kubectl apply -f deployment.yml
+```

@@ -17,7 +17,6 @@ class App {
 
   static ls(bot, message) {
     const conditions = new Parser(message.match[1]).parse()
-
     const client = new GitHubApiClient()
 
     client.getAllPullRequests(conditions).then((prs) => {

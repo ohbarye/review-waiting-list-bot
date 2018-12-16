@@ -14,7 +14,7 @@ class Parser {
         ...obj,
         [key]: this.extract(key),
       }
-    }, {})
+    }, this.defaultConditions())
   }
 
   extract(argName) {
@@ -33,6 +33,16 @@ class Parser {
                       !_.startsWith(matched[0], '-'),
                      ]
                      : []
+  }
+
+  defaultConditions() {
+    let orgs = []
+
+    if (process.env.GITHUB_ORGANIZATION) {
+      orgs = [ process.env.GITHUB_ORGANIZATION ]
+    }
+
+    return { 'org': new Condition('org', orgs ) }
   }
 }
 
