@@ -1,24 +1,23 @@
-# Let's encourage your team's review
+# Encourage your team to review pull requests
 
 [![Build Status](https://travis-ci.org/ohbarye/review-waiting-list-bot.svg?branch=master)](https://travis-ci.org/ohbarye/review-waiting-list-bot)
 
 ## What's this?
 
-It's a Slack bot to list up review waiting list.
+It's a Slack bot to list pull requests from your team that are currently awaiting review.
 
 <img width="1035" alt="2017-08-11 11 15 31" src="https://user-images.githubusercontent.com/1811616/29199753-659fd0e2-7e8a-11e7-8435-99daa8c0b233.png">
 
-
 ## Usage
 
-In your Slack room, just call your bot.
+In your Slack channel, just call the bot.
 
 ```
 /invite @review-bot
 @review-bot ls author:ohbarye
 ```
 
-For more detailed query:
+For more detailed queries:
 
 ```
 /invite @review-bot
@@ -33,19 +32,19 @@ repo | Optional | You can specify multiple repositories. If you specify this arg
 label | Optional | You can specify multiple labels. If you specify this argument with `-` (e.g. `-label:enhancement`), it excludes pull requests in the repository.
 reviewer | Optional | You can specify multiple reviewers. If you specify this argument with `-` (e.g. `-reviewer:ohbarye`), it excludes pull requests in the repository. Regarding review requests feature on GitHub, see https://blog.github.com/2016-12-07-introducing-review-requests/
 
-Besides, the bot accepts random order.
+The PRs will be listed in random order.
 
 ### Tips
 
-You can use this bot even better in combination with the [Slack reminder](https://get.slack.help/hc/en-us/articles/208423427-Set-a-reminder).
+You can also automate this via [Slack reminders](https://get.slack.help/hc/en-us/articles/208423427-Set-a-reminder).
 
-For instance, the following reminder setting invokes the bot every weekday 11 am.
+For instance, the following reminder setting invokes the bot every weekday at 11:00 AM.
 
 ```
 /remind #general “@review-bot ls author:ohbarye,basan,org/team owner:ohbarye repo:ohbarye/review-waiting-list-bot,rails/rails” at 11am every weekday
 ```
 
-## Develop
+## Development
 
 ### Setup
 
@@ -80,6 +79,7 @@ If you do not have it yet, visit https://my.slack.com/services/new/bot and get t
 ### GITHUB_AUTH_TOKEN (required)
 
 GitHub bot API token.
+
 If you're not familiar with it, see https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
 
 #### Note about scopes of GITHUB_AUTH_TOKEN
@@ -93,11 +93,12 @@ You need to grant your token the following required scopes to execute queries fr
 ### GITHUB_ORGANIZATION (optional)
 
 GitHub organization name.
+
 Setting this will force the PR's to be scoped to the GitHub organization with that name.
 
 ## Deployment
 
-If you want to deploy to Heroku, just click following button.
+If you want to deploy to Heroku, just click the following button.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
@@ -112,7 +113,7 @@ docker run -e SLACK_BOT_TOKEN=your-slack-bot-token -e GITHUB_AUTH_TOKEN=your-git
 
 ## Run with Kubernetes
 
-Create a deployment e.g:
+Create a deployment:
 ```yaml
 # deployment.yml
 ---
