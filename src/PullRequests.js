@@ -29,8 +29,8 @@ class PullRequests {
     }
   }
 
+  // Check PR labels to decide whether a PR should be ignored
   ignorableDueToLabel(pr) {
-    // Also look at labels for ignoring
     if (pr.labels != null && pr.labels.nodes.length > 0) {
       const sanitizedLabels = _.flatMap(pr.labels.nodes, (label) => label.name.replace(/'|\s+/g, ''))
 
@@ -38,8 +38,11 @@ class PullRequests {
         return true
       }
     }
+
+    return false
   }
 
+  // Check PR title to decide whether a PR should be ignored
   ignorableDueToTitle(pr) {
     const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
 
@@ -51,7 +54,7 @@ class PullRequests {
   }
 
   regexToIgnore() {
-    return (new RegExp(`(${this.wordsToIgnore().join('|')})`, 'i'))
+    return new RegExp(`(${this.wordsToIgnore().join('|')})`, 'i')
   }
 
   matchesReviewer(pr) {
