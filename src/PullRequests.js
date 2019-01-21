@@ -7,15 +7,23 @@ class PullRequests {
     this.prs = prs
     this.label = label
     this.reviewer = reviewer
-
-    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'formatPullRequest', 'reviewersText', 'ignorableDueToLabel', 'ignorableDueToTitle', 'wordsToIgnore', 'regexToIgnore'])
+    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'formatPullRequest', 'reviewersText'])
   }
 
   isIgnorable(pr) {
-    if (this.ignorableDueToLabel(pr)) { return true }
-    if (this.ignorableDueToTitle(pr)) { return true }
+    const wordsToIgnore = ['wip', 'dontmerge', 'donotmerge']
+    const regexToIgnore = new RegExp(`(${wordsToIgnore.join('|')})`, 'i')
 
-    return false
+    if (pr.labels != null && pr.labels.nodes.length > 0) {
+      const sanitizedLabels = _.flatMap(pr.labels.nodes, (label) => label.name.replace(/'|\s+/g, ''))
+
+      if (_.some(sanitizedLabels, (sanitizedLabel) => sanitizedLabel.match(regexToIgnore))) {
+        return true
+      }
+    }
+
+    const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
+    return !!sanitizedTitle.match(regexToIgnore)
   }
 
   matchesLabel(pr) {
@@ -27,34 +35,6 @@ class PullRequests {
     } else {
       return true
     }
-  }
-
-  // Check PR labels to decide whether a PR should be ignored
-  ignorableDueToLabel(pr) {
-    if (pr.labels != null && pr.labels.nodes.length > 0) {
-      const sanitizedLabels = _.flatMap(pr.labels.nodes, (label) => label.name.replace(/'|\s+/g, ''))
-
-      if (_.some(sanitizedLabels, (sanitizedLabel) => sanitizedLabel.match(this.regexToIgnore()))) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  // Check PR title to decide whether a PR should be ignored
-  ignorableDueToTitle(pr) {
-    const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
-
-    return !!sanitizedTitle.match(this.regexToIgnore())
-  }
-
-  wordsToIgnore() {
-    return ['wip', 'dontmerge', 'donotmerge']
-  }
-
-  regexToIgnore() {
-    return new RegExp(`(${this.wordsToIgnore().join('|')})`, 'i')
   }
 
   matchesReviewer(pr) {
