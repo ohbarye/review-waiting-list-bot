@@ -12,10 +12,10 @@ class PullRequests {
   }
 
   isIgnorable(pr) {
-    const ignoreWords = ['wip', 'dontmerge', 'donotmerge']
-    const regex = new RegExp(`(${ignoreWords.join('|')})`, 'i')
-    const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
-    return !!sanitizedTitle.match(regex)
+    if (this.ignorableDueToLabel(pr)) { return true }
+    if (this.ignorableDueToTitle(pr)) { return true }
+
+    return false
   }
 
   matchesLabel(pr) {
@@ -27,6 +27,34 @@ class PullRequests {
     } else {
       return true
     }
+  }
+
+  // Check PR labels to decide whether a PR should be ignored
+  ignorableDueToLabel(pr) {
+    if (pr.labels != null && pr.labels.nodes.length > 0) {
+      const sanitizedLabels = _.flatMap(pr.labels.nodes, (label) => label.name.replace(/'|\s+/g, ''))
+
+      if (_.some(sanitizedLabels, (sanitizedLabel) => sanitizedLabel.match(this.regexToIgnore()))) {
+        return true
+      }
+    }
+
+    return false
+  }
+
+  // Check PR title to decide whether a PR should be ignored
+  ignorableDueToTitle(pr) {
+    const sanitizedTitle = pr.title.replace(/'|\s+/g, '')
+
+    return !!sanitizedTitle.match(this.regexToIgnore())
+  }
+
+  wordsToIgnore() {
+    return ['wip', 'dontmerge', 'donotmerge']
+  }
+
+  regexToIgnore() {
+    return new RegExp(`(${this.wordsToIgnore().join('|')})`, 'i')
   }
 
   matchesReviewer(pr) {
