@@ -8,7 +8,7 @@ class PullRequests {
     this.label = label
     this.reviewer = reviewer
 
-    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'formatPullRequest', 'reviewersText'])
+    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'formatPullRequest', 'reviewersText', 'ignorableDueToLabel', 'ignorableDueToTitle', 'wordsToIgnore', 'regexToIgnore'])
   }
 
   isIgnorable(pr) {
