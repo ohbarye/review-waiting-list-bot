@@ -10,6 +10,14 @@ describe('.isIgnorable', () => {
       { title: "Do not merge - this is a PR title" },
       { title: "[DO NOT MERGE] - this is a PR title" },
       { title: "WIP - this is a PR title" },
+      { title: "[WIP] This is a PR title" },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'WIP' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: '[WIP]' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'wip' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'donotmerge' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'Don\'t Merge' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'dont merge' }] } },
+      { title: "[Don't Merge] This is a PR title" },
     ]
 
     for (const pr of pullRequests) {
