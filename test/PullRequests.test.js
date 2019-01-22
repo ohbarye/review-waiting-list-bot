@@ -23,6 +23,17 @@ describe('.isIgnorable', () => {
     for (const pr of pullRequests) {
       expect(pullRequest.isIgnorable(pr)).toEqual(true)
     }
+
+    const nonIgnorablePRs = [
+      { title: "This is a PR title" },
+      { title: "This is a PR title", labels: { nodes: [{ name: 'TIP' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: '[Do Merge]' }] } },
+      { title: "This is a PR title", labels: { nodes: [{ name: '[Test]' }] } },
+    ]
+
+    for (const pr of nonIgnorablePRs) {
+      expect(pullRequest.isIgnorable(pr)).toEqual(false)
+    }
   })
 })
 
