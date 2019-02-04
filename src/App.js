@@ -27,7 +27,7 @@ class App {
 
         if (messages.length > 0) {
           _.each(messages, (pr) => convo.say(pr))
-          convo.say("That's all. Please review!")
+          convo.say("That's all. Please wild out!")
         } else {
           convo.say('No pull requests for now.')
         }
