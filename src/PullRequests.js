@@ -3,12 +3,13 @@
 const _ = require('lodash')
 
 class PullRequests {
-  constructor(prs, {label, reviewer}) {
+  constructor(prs, {label, reviewer, assignee}) {
     this.prs = prs
     this.label = label
     this.reviewer = reviewer
+    this.assignee = assignee
 
-    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'formatPullRequest', 'reviewersText'])
+    _.bindAll(this, ['matchesLabel', 'matchesReviewer', 'matchesAssignee', 'formatPullRequest', 'reviewersText'])
   }
 
   isIgnorable(pr) {
@@ -46,6 +47,22 @@ class PullRequests {
     }
   }
 
+  matchesAssignee(pr) {
+    if (this.assignee.values.length > 0) {
+      const result = _.some(this.assignee.values, (_assignee) => {
+        const matched = _assignee.match(/^.+\/(.+)$/)
+        const username = matched ? matched[1] : _assignee
+
+        return _.flatMap(pr.assignees.nodes, (request) => {
+          return request.login || request.name
+        }).includes(username)
+      })
+      return (this.assignee.inclusion ? result : !result)
+    } else {
+      return true
+    }
+  }
+
   formatPullRequest(pr, index) {
     return `${index+1}. \`${pr.title}\` ${pr.url} by ${pr.author.login} ${this.reviewersText(pr.reviewRequests.nodes)}`
   }
@@ -60,6 +77,7 @@ class PullRequests {
       .reject(this.isIgnorable)
       .filter(this.matchesLabel)
       .filter(this.matchesReviewer)
+      .filter(this.matchesAssignee)
       .map(this.formatPullRequest)
       .value()
   }

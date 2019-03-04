@@ -14,6 +14,7 @@ class Condition {
       'repo',
       'label',
       'reviewer',
+      'assignee',
     ]
   }
 
