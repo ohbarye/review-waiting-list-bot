@@ -14,6 +14,8 @@ class Condition {
       'repo',
       'label',
       'reviewer',
+      'org',
+      'review-requested',
     ]
   }
 
