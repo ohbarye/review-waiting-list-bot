@@ -53,8 +53,8 @@ class PullRequests {
         const matched = _assignee.match(/^.+\/(.+)$/)
         const username = matched ? matched[1] : _assignee
 
-        return _.flatMap(pr.assignees.nodes, (request) => {
-          return request.login || request.name
+        return _.flatMap(pr.assignees.nodes, (assignee) => {
+          return assignee.login
         }).includes(username)
       })
       return (this.assignee.inclusion ? result : !result)
