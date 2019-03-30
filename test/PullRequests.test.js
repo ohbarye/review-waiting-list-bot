@@ -1,5 +1,6 @@
 const PullRequests = require('../src/PullRequests')
 const Condition = require('../src/Condition')
+const { advanceBy, clear } = require('jest-date-mock')
 
 describe('.isIgnorable', () => {
   test('returns true with matched strings', () => {
@@ -126,13 +127,19 @@ describe('.formatPullRequest', () => {
       title: 'Add some tests',
       url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
       author: { login: 'ohbarye' },
+      createdAt: new Date().toISOString(),
       reviewRequests: {
         nodes: [],
       },
     }
+
+    advanceBy(3 * 60 * 1000)
+
     expect(pullRequest.formatPullRequest(pr, 0)).toEqual(
-      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (no reviewer assigned)'
+      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (no reviewer assigned) 3 minutes ago'
     )
+
+    clear()
   })
 
   test('returns formatted string with reviewer name when someone assigned', () => {
@@ -141,6 +148,7 @@ describe('.formatPullRequest', () => {
       title: 'Add some tests',
       url: 'https://github.com/ohbarye/review-waiting-list-bot/pull/34',
       author: { login: 'ohbarye' },
+      createdAt: new Date().toISOString(),
       reviewRequests: {
         nodes: [
           { requestedReviewer: { login:  'basan' }},
@@ -148,8 +156,13 @@ describe('.formatPullRequest', () => {
         ],
       },
     }
+
+    advanceBy(5 * 60 * 60 * 1000)
+
     expect(pullRequest.formatPullRequest(pr, 0)).toEqual(
-      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (reviewer: basan, team-b)'
+      '1. `Add some tests` https://github.com/ohbarye/review-waiting-list-bot/pull/34 by ohbarye (reviewer: basan, team-b) about 5 hours ago'
     )
+
+    clear()
   })
 })

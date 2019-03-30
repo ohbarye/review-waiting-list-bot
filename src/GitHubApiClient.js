@@ -28,6 +28,7 @@ class GitHubApiClient {
   //           "author": {
   //             "login": "ohbarye"
   //           },
+  //           createdAt: '2019-01-01T00:00:00Z',
   //           "labels": {
   //             "nodes": [
   //               {
@@ -66,6 +67,7 @@ class GitHubApiClient {
               author {
                 login,
               },
+              createdAt,
               labels(first:100) {
                 nodes {
                   name,
