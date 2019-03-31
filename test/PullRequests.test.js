@@ -119,6 +119,44 @@ describe('.matchesReviewer', () => {
   })
 })
 
+describe('.matchesAssignee', () => {
+  const pr = {
+    assignees: {
+      nodes: [
+        {
+          login: 'ohbarye',
+        },
+      ],
+    },
+  }
+
+  describe('given username', () => {
+    test('returns true with matched strings', () => {
+      const pullRequest = new PullRequests([], {
+        assignee: new Condition('assignee', ['ohbarye'], true),
+      })
+
+      expect(pullRequest.matchesAssignee(pr)).toEqual(true)
+    })
+
+    test('returns false even with matched strings when inclusion is false', () => {
+      const pullRequest = new PullRequests([], {
+        assignee: new Condition('assignee', ['ohbarye'], false),
+      })
+
+      expect(pullRequest.matchesAssignee(pr)).toEqual(false)
+    })
+
+    test('returns false with unmatched strings', () => {
+      const pullRequest = new PullRequests([], {
+        assignee: new Condition('assignee', ['butcher'], true),
+      })
+
+      expect(pullRequest.matchesAssignee(pr)).toEqual(false)
+    })
+  })
+})
+
 describe('.formatPullRequest', () => {
   test('returns formatted string without reviewer name when no review assigned', () => {
     const pullRequest = new PullRequests([], {})
