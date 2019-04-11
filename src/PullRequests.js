@@ -55,7 +55,7 @@ class PullRequests {
   }
 
   formatPullRequest(pr, index) {
-    return `${index+1}. \`${pr.title}\` ${pr.url} by ${pr.author.login} ${this.reviewersText(pr.reviewRequests.nodes)}`
+    return `${index+1}. \`${pr.title.replace('DBL-', 'DBL・')}\` ${pr.url} by ${pr.author.login} ${this.reviewersText(pr.reviewRequests.nodes)}`
   }
 
   reviewersText(reviewRequests) {
